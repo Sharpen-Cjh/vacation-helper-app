@@ -2,6 +2,7 @@ type UserInformation = {
   email: string;
   password: string;
 };
+
 function validateUser(values: UserInformation) {
   const errors = {
     email: '',
@@ -18,6 +19,7 @@ function validateUser(values: UserInformation) {
   }
   return errors;
 }
+
 function validateLogin(values: UserInformation) {
   return validateUser(values);
 }

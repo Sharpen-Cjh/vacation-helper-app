@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, SafeAreaView, View } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, SafeAreaView, View, TextInput } from 'react-native';
 
 import InputField from '@/src/components/InputField';
 
@@ -8,6 +8,8 @@ import CustomButton from '@/src/components/CustomButton';
 import { validateSignup } from '@/src/utils';
 
 function SignupScreen() {
+  const passwordRef = useRef<TextInput | null>(null);
+  const passwordConfirmRef = useRef<TextInput | null>(null);
   const signup = useForm({
     initialValue: {
       email: '',
@@ -17,29 +19,44 @@ function SignupScreen() {
     validate: validateSignup
   });
 
+  const handleSubmit = () => {
+    console.log(signup.values);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.inputContainer}>
         <InputField
+          autoFocus
           placeholder='이메일'
           error={signup.errors.email}
           touched={signup.touched.email}
           inputMode='email'
+          returnKeyType='next'
+          blurOnSubmit={false}
+          onSubmitEditing={() => passwordRef.current?.focus()}
           {...signup.getTextInputProps('email')}
         />
         <InputField
+          ref={passwordRef}
           placeholder='비밀번호'
+          textContentType='oneTimeCode'
           error={signup.errors.password}
           touched={signup.touched.password}
           secureTextEntry
+          returnKeyType='next'
+          blurOnSubmit={false}
+          onSubmitEditing={() => passwordConfirmRef.current?.focus()}
           {...signup.getTextInputProps('password')}
         />
         <InputField
+          ref={passwordConfirmRef}
           placeholder='비밀번호 확인'
           error={signup.errors.passwordConfirm}
           touched={signup.touched.passwordConfirm}
           secureTextEntry
           {...signup.getTextInputProps('passwordConfirm')}
+          onSubmitEditing={handleSubmit}
         />
       </View>
       <CustomButton label='회원가입' variant='filled' size='large' />
