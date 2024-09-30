@@ -7,7 +7,7 @@ type RequestUser = {
 };
 
 const postSignup = async ({ email, password }: RequestUser): Promise<void> => {
-  const { data } = await axiosInstance.post('/api/auth/signup', {
+  const { data } = await axiosInstance.post('/auth/signup', {
     email,
     password
   });
@@ -23,7 +23,7 @@ const postLogin = async ({
   email,
   password
 }: RequestUser): Promise<ResponseToken> => {
-  const { data } = await axiosInstance.post('/api/auth/signin', {
+  const { data } = await axiosInstance.post('/auth/signin', {
     email,
     password
   });
@@ -37,24 +37,22 @@ type ResponseProfile = {
 };
 
 const getProfile = async (): Promise<ResponseProfile> => {
-  const { data } = await axiosInstance.get('/api/auth/profile');
+  const { data } = await axiosInstance.get('/auth/me');
   return data;
 };
 
 const getAccessToken = async (): Promise<ResponseToken> => {
   const refreshToken = await getEncryptStorage('refreshToken');
-
-  const { data } = await axiosInstance.get('/api/auth/refresh', {
+  const { data } = await axiosInstance.get('/auth/refresh', {
     headers: {
       Authorization: `Bearer ${refreshToken}`
     }
   });
-
   return data;
 };
 
 const logout = async (): Promise<void> => {
-  await axiosInstance.post('/api/auth/logout');
+  await axiosInstance.post('/auth/logout');
 };
 
 export { postSignup, postLogin, getProfile, getAccessToken, logout };

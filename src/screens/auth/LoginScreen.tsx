@@ -5,12 +5,15 @@ import InputField from '@/src/components/InputField';
 import CustomButton from '@/src/components/CustomButton';
 
 import useForm from '@/src/hooks/useForm';
+import useAuth from '@/src/hooks/queries/useAuth';
+
 import { validateLogin } from '@/src/utils';
 
 interface LoginScreenProps {}
 
 function LoginScreen({}: LoginScreenProps) {
   const passwordRef = useRef<TextInput | null>(null);
+  const { loginMutation } = useAuth();
   const login = useForm({
     initialValue: {
       email: '',
@@ -20,7 +23,7 @@ function LoginScreen({}: LoginScreenProps) {
   });
 
   const handleSubmit = () => {
-    console.log(login.values);
+    loginMutation.mutate(login.values);
   };
   return (
     <SafeAreaView style={styles.container}>

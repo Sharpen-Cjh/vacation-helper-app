@@ -1,13 +1,13 @@
-import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
   getAccessToken,
   getProfile,
+  logout,
   postLogin,
   postSignup
 } from '@/src/api/auth';
 import {
-  ResponseError,
   UseMutationCustomOptions,
   UseQueryCustomOptions
 } from '@/src/types/common';
@@ -73,8 +73,22 @@ function useGetProfile(queryOptions?: UseQueryCustomOptions) {
   });
 }
 
+function useLogout(mutationOptions?: UseMutationCustomOptions) {
+  return useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      removeHeader('Authorization');
+      removeEncryptStorage('refreshToken');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    },
+    ...mutationOptions
+  });
+}
+
 function useAuth() {
-  const signUpMutation = useSignUp();
+  const signupMutation = useSignUp();
   const refreshTokenQuery = useGetRefreshToken();
   const getProfileQuery = useGetProfile({
     enabled: refreshTokenQuery.isSuccess
@@ -82,8 +96,15 @@ function useAuth() {
 
   const isLogin = getProfileQuery.isSuccess;
   const loginMutation = useLogin();
+  const logoutMutation = useLogout();
 
-  return { signUpMutation, loginMutation, isLogin, getProfileQuery };
+  return {
+    signupMutation,
+    loginMutation,
+    isLogin,
+    getProfileQuery,
+    logoutMutation
+  };
 }
 
 export default useAuth;
