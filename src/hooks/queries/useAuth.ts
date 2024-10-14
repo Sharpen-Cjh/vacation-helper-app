@@ -30,6 +30,7 @@ function useLogin(mutationOptions?: UseMutationCustomOptions) {
       setEncryptStorage('refreshToken', refreshToken);
       setHeader('Authorization', `Bearer ${accessToken}`);
     },
+    onError() {},
     onSettled() {
       queryClient.refetchQueries({ queryKey: ['auth', 'getAccessToken'] });
       queryClient.invalidateQueries({ queryKey: ['auth', 'getProfile'] });

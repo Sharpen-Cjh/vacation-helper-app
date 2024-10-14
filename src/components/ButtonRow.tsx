@@ -4,10 +4,10 @@ import { commonStyles } from '@/src/styles/commonStyles';
 import { colors } from '../styles/colors';
 
 interface ButtonRowProps {
-  primaryTitle: string;
-  secondaryTitle: string;
-  onPrimaryPress: () => void;
-  onSecondaryPress: () => void;
+  primaryTitle?: string;
+  secondaryTitle?: string;
+  onPrimaryPress?: () => void;
+  onSecondaryPress?: () => void;
 }
 
 const ButtonRow: React.FC<ButtonRowProps> = ({
@@ -48,13 +48,13 @@ const styles = StyleSheet.create({
   },
   primaryButton: {},
   primaryButtonText: {
-    color: colors.primary,
+    color: colors.PRIMARY,
     fontWeight: 'bold',
     fontSize: 16
   },
   secondaryButton: {},
   secondaryButtonText: {
-    color: colors.primary,
+    color: colors.PRIMARY,
     fontWeight: 'bold',
     fontSize: 16
   }

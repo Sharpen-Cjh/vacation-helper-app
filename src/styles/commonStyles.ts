@@ -7,8 +7,9 @@ import { typography } from './typography';
 export const commonStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
-    padding: spacing.medium
+    backgroundColor: colors.BACKGROUND,
+    padding: spacing.medium,
+    borderRadius: 10
   },
   row: {
     flexDirection: 'row',
@@ -27,28 +28,28 @@ export const commonStyles = StyleSheet.create({
     textAlign: 'left'
   },
   buttonPrimary: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.PRIMARY,
     padding: spacing.medium,
     borderRadius: 8
   },
   buttonText: {
-    color: colors.white,
+    color: colors.WHITE,
     fontSize: 16,
     fontWeight: 'bold'
   },
   iconSmall: {
     fontSize: 20,
-    color: colors.black,
+    color: colors.BLACK,
     marginRight: spacing.small
   },
   iconMedium: {
     fontSize: 30,
-    color: colors.black,
+    color: colors.BLACK,
     marginRight: spacing.medium
   },
   iconLarge: {
     fontSize: 40,
-    color: colors.black,
+    color: colors.BLACK,
     marginRight: spacing.large
   },
   modalOverlayFull: {
@@ -60,7 +61,7 @@ export const commonStyles = StyleSheet.create({
   modalContainerFull: {
     flex: 1,
     width: '100%',
-    backgroundColor: colors.white,
+    backgroundColor: colors.WHITE,
     padding: spacing.large,
     justifyContent: 'center'
   },
@@ -73,7 +74,7 @@ export const commonStyles = StyleSheet.create({
   modalContainerSmall: {
     width: '90%',
     padding: spacing.large,
-    backgroundColor: colors.white,
+    backgroundColor: colors.WHITE,
     borderRadius: 10
   }
 });

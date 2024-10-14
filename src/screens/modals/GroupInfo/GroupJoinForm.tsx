@@ -1,34 +1,28 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-
 import ButtonRow from '@/src/components/\bButtonRow';
 import BottomBorderedInput from '@/src/components/BottomBorderedInput';
 import { commonStyles } from '@/src/styles/commonStyles';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { useUpdateNickname } from '@/src/hooks/queries/useAccount';
-
-interface NickNameFormProps {
+interface GroupJoinFormProps {
   closeModal: () => void;
 }
-
-function NickNameForm({ closeModal }: NickNameFormProps) {
-  const updateNicknameMutation = useUpdateNickname();
-  const [nickName, setNickName] = useState<string>('');
-  const handlePressSaveButton = () => {
-    updateNicknameMutation.mutate(nickName);
-    closeModal();
-  };
+const handlePressSaveButton = () => {
+  console.log('save');
+};
+function GroupJoinForm({ closeModal }: GroupJoinFormProps) {
+  const [groupCode, setGroupCode] = useState<string>('');
 
   return (
     <View style={{ gap: 10 }}>
       <Text style={[commonStyles.textHeader, commonStyles.textLeft]}>
-        닉네임 변경
+        그룹 참가
       </Text>
       <BottomBorderedInput
-        placeholder='새로운 닉네임을 입력해주세요'
-        value={nickName}
+        placeholder='그룹 코드를 입력해주세요'
+        value={groupCode}
         onChangeText={(text) => {
-          setNickName(text);
+          setGroupCode(text);
         }}
       />
       <ButtonRow
@@ -43,4 +37,4 @@ function NickNameForm({ closeModal }: NickNameFormProps) {
 
 const styles = StyleSheet.create({});
 
-export default NickNameForm;
+export default GroupJoinForm;

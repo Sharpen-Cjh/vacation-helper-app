@@ -1,17 +1,40 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  View
+} from 'react-native';
 import { commonStyles } from '../styles/commonStyles';
 
-type BottomBorderedInputProps = {
-  label: string;
+interface BottomBorderedInputProps extends TextInputProps {
+  label?: string;
   placeholder?: string;
-};
+  value?: string;
+  onChangeText?: (text: string) => void;
+}
 
-function BottomBorderedInput({ label, placeholder }: BottomBorderedInputProps) {
+function BottomBorderedInput({
+  label,
+  placeholder,
+  value,
+  onChangeText,
+  ...props
+}: BottomBorderedInputProps) {
   return (
     <View style={styles.inputContainer}>
-      <Text style={commonStyles.textBody}>{label}</Text>
-      <TextInput placeholder={placeholder} />
+      {label && <Text style={commonStyles.textBody}>{label}</Text>}
+      <TextInput
+        style={commonStyles.textBody}
+        placeholder={placeholder}
+        value={value}
+        onChangeText={onChangeText} //
+        {...props}
+        autoCapitalize='none'
+        spellCheck={false}
+        autoCorrect={false}
+      />
     </View>
   );
 }

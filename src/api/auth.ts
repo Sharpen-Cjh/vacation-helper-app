@@ -31,15 +31,28 @@ const postLogin = async ({
 };
 
 type ResponseProfile = {
-  id: string;
+  id: number;
+  name: string;
   email: string;
-  nickname: string;
+  additionalUnderOneYearLeaveAdded: number;
+  availableAnnualLeaves: number;
+  availableUnderOneYearLeaves: number;
+  newRecruitsMode: boolean;
+  dateOfJoining: Date;
+  createdAt: Date;
+  deletedAt: Date | null;
+  updatedAt: Date;
 };
 
 const getProfile = async (): Promise<ResponseProfile> => {
   const { data } = await axiosInstance.get('/auth/me');
   return data;
 };
+
+// const getUserInfoApi = async () => {
+//   const { data } = await axiosInstance.get('/auth/user-info');
+//   return data;
+// };
 
 const getAccessToken = async (): Promise<ResponseToken> => {
   const refreshToken = await getEncryptStorage('refreshToken');
@@ -55,5 +68,5 @@ const logout = async (): Promise<void> => {
   await axiosInstance.post('/auth/logout');
 };
 
-export { postSignup, postLogin, getProfile, getAccessToken, logout };
+export { postSignup, postLogin, getAccessToken, logout, getProfile };
 export type { RequestUser, ResponseToken, ResponseProfile };
