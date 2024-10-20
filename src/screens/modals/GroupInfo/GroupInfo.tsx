@@ -32,7 +32,7 @@ function GroupList({}: GroupListProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={commonStyles.textHeader}>그룹 목록</Text>
+      <Text>그룹 목록</Text>
       <View style={{ flex: 1, padding: 10, justifyContent: 'space-evenly' }}>
         <View
           style={[

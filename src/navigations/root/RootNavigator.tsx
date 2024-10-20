@@ -4,6 +4,6 @@ import useAuth from '@/src/hooks/queries/useAuth';
 
 function RootNavigator() {
   const { isLogin } = useAuth();
-  return <>{!isLogin ? <MainDrawerNavigator /> : <AuthStackNavigator />}</>;
+  return <>{isLogin ? <MainDrawerNavigator /> : <AuthStackNavigator />}</>;
 }
 export default RootNavigator;

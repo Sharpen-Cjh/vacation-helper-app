@@ -49,14 +49,14 @@ const styles = StyleSheet.create({
   primaryButton: {},
   primaryButtonText: {
     color: colors.PRIMARY,
-    fontWeight: 'bold',
-    fontSize: 16
+    fontSize: 16,
+    fontFamily: 'Gmarket-Sans-Medium'
   },
   secondaryButton: {},
   secondaryButtonText: {
     color: colors.PRIMARY,
-    fontWeight: 'bold',
-    fontSize: 16
+    fontSize: 16,
+    fontFamily: 'Gmarket-Sans-Medium'
   }
 });
 

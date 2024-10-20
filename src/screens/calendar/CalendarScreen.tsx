@@ -4,19 +4,22 @@ import {
   View,
   Modal,
   Text,
-  SafeAreaView,
-  Pressable
+  Pressable,
+  Dimensions,
+  KeyboardAvoidingView
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar, DateData, LocaleConfig } from 'react-native-calendars';
+import { Ionicons } from '@expo/vector-icons';
 import LeaveForm from './LeaveForm';
-import useVacation from '@/src/hooks/queries/useVacation';
 
+import useVacation from '@/src/hooks/queries/useVacation';
 import type { VacationInfo } from '@/src/types/vacationInfo';
 import { colors } from '@/src/styles/colors';
 import { MarkingProps } from 'react-native-calendars/src/calendar/day/marking';
-import { Ionicons } from '@expo/vector-icons';
 import GroupInfo from '../modals/GroupInfo/GroupInfo';
 import AccountForm from '../modals/AccountForm/AccountForm';
+import { processFontFamily } from 'expo-font';
 
 interface CustomMarkingProps extends MarkingProps {
   id?: number;
@@ -56,6 +59,7 @@ LocaleConfig.locales['ko'] = {
 
 LocaleConfig.defaultLocale = 'ko';
 
+const { height } = Dimensions.get('window');
 const formatVacationDataForMarkedDates = (vacations: VacationInfo[]) => {
   const markedDates: CustomMarkedDates = {};
 
@@ -92,6 +96,7 @@ function CalendarScreen() {
   const [selectedVacation, setSelectedVacation] = useState<VacationInfo | null>(
     null
   );
+
   const { getAllVacationQuery } = useVacation();
 
   const markedDates: CustomMarkedDates = getAllVacationQuery.isSuccess
@@ -155,7 +160,13 @@ function CalendarScreen() {
           });
           return (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ fontSize: 24, fontWeight: 'bold', flex: 1 }}>
+              <Text
+                style={{
+                  fontSize: 24,
+                  flex: 1,
+                  fontFamily: 'Gmarket-Sans-Medium'
+                }}
+              >
                 {monthYear}
               </Text>
               <View style={styles.headerIcons}>
@@ -188,23 +199,26 @@ function CalendarScreen() {
           );
         }}
         theme={{
+          textDayFontFamily: 'Gmarket-Sans-Medium',
+          textMonthFontFamily: 'Gmarket-Sans-Medium',
+          textDayHeaderFontFamily: 'Gmarket-Sans-Medium',
+          textDayFontSize: 12,
+          textMonthFontSize: 24,
+          textDayHeaderFontSize: 14,
           'stylesheet.day.basic': {
             base: {
               width: '100%',
-              height: 100,
+              height: (height * 0.8) / 6,
               borderWidth: 1,
               borderColor: colors.GRAY_200,
-              paddingLeft: 5
+              paddingLeft: 5,
+              fontFamily: 'Gmarket-Sans-Medium'
             },
             today: {
               borderRadius: 0
             }
           },
           'stylesheet.calendar.header': {
-            monthText: {
-              fontSize: 24,
-              fontWeight: 'bold'
-            },
             dayTextAtIndex0: {
               color: colors.PRIMARY
             },
@@ -229,8 +243,6 @@ function CalendarScreen() {
           },
           'stylesheet.calendar.main': {
             week: {
-              marginTop: 0,
-              marginBottom: 0,
               flexDirection: 'row',
               justifyContent: 'space-around'
             }
@@ -242,6 +254,17 @@ function CalendarScreen() {
         enableSwipeMonths={true}
         hideArrows={true}
       />
+      <View style={styles.bottomBar}>
+        <Ionicons
+          name='add-circle-outline'
+          size={40}
+          color={colors.PRIMARY}
+          onPress={() => {
+            openModal('leave');
+          }}
+        />
+      </View>
+
       <Modal
         animationType='slide'
         transparent={true}
@@ -263,21 +286,18 @@ function CalendarScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    marginTop: 30,
-    paddingTop: 30
+    flex: 1
   },
   headerIcons: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    gap: 10,
+    gap: 15,
     padding: 10
   },
   calendarContainer: {
-    flex: 1,
     width: '100%',
+    height: height * 0.8,
     minHeight: '100%'
   },
   modalOverlay: {
@@ -291,16 +311,18 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'white'
   },
-  leaveForm: {
-    flex: 1,
-    padding: 20
-  },
   closeButton: {
     position: 'absolute',
     right: 15,
     top: 15,
     borderRadius: 25,
     padding: 5
+  },
+  bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff'
   }
 });
 

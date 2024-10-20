@@ -33,11 +33,6 @@ function LeaveDaysForm({ closeModal }: LeaveDaysFormProps) {
     newRecruitsMode: false
   });
 
-  const handleConfirmDate = () => {
-    setIsPicked(true);
-    setIsVisible(false);
-  };
-
   const handleChangeDate = (_: DateTimePickerEvent, pickedDate?: Date) => {
     setAnnualLeaveInfo({
       ...annualLeaveInfo,
@@ -125,12 +120,12 @@ function LeaveDaysForm({ closeModal }: LeaveDaysFormProps) {
         onPrimaryPress={handlePressSaveButton}
         onSecondaryPress={closeModal}
       />
-      <DatePickerOption
-        isVisible={isVisible}
-        date={annualLeaveInfo.dateOfJoining}
-        onChangeDate={handleChangeDate}
-        onConfirmDate={handleConfirmDate}
-      />
+      {isVisible && (
+        <DatePickerOption
+          date={annualLeaveInfo.dateOfJoining}
+          onChangeDate={handleChangeDate}
+        />
+      )}
     </View>
   );
 }

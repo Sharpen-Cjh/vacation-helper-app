@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { StyleSheet, SafeAreaView, View, TextInput } from 'react-native';
+import { StyleSheet, View, TextInput } from 'react-native';
 
 import useForm from '@/src/hooks/useForm';
 import useAuth from '@/src/hooks/queries/useAuth';
@@ -8,6 +8,7 @@ import InputField from '@/src/components/InputField';
 import CustomButton from '@/src/components/CustomButton';
 
 import { validateSignup } from '@/src/utils';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function SignupScreen() {
   const passwordRef = useRef<TextInput | null>(null);
