@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,7 +6,7 @@ import {
   TextInput,
   Switch,
   ScrollView,
-  Dimensions
+  Pressable
 } from 'react-native';
 import { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { DateData } from 'react-native-calendars';
@@ -15,6 +15,10 @@ import ButtonRow from '@/src/components/\bButtonRow';
 import DatePickerOption from '@/src/components/DatePickerOption';
 import { commonStyles } from '@/src/styles/commonStyles';
 import { VacationInfo } from '@/src/types/vacationInfo';
+import useVacation from '@/src/hooks/queries/useVacation';
+import formatDate from '@/src/utils/date';
+import useForm from '@/src/hooks/useForm';
+import { validateLeaveForm } from '@/src/utils';
 
 type LeaveFormProps = {
   selectedVacation: VacationInfo | null;
@@ -23,28 +27,34 @@ type LeaveFormProps = {
 };
 
 function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
-  const [memo, setMemo] = useState(selectedVacation?.title || '');
-  const [annualLeaveDays, setAnnualLeaveDays] = useState(
-    selectedVacation?.annualLeaveDays || 0
-  );
-  const [underOneYearAnnualLeaveDays, setUnderOneYearAnnualLeaveDays] =
-    useState(selectedVacation?.underOneYearAnnualLeaveDays || 0);
-  const [startDate, setStartDate] = useState<Date>(new Date());
-  const [endDate, setEndDate] = useState<Date>(new Date());
   const [isStartVisible, setIsStartVisible] = useState<boolean>(false);
   const [isEndVisible, setIsEndVisible] = useState<boolean>(false);
   const [isGroupShared, setIsGroupShared] = useState<boolean>(false);
+
+  const annualLeaveRef = useRef<TextInput>(null);
+  const underOneYearAnnualLeaveRef = useRef<TextInput>(null);
+
+  const { postVacationInfoMutation } = useVacation();
+
+  const { values, errors, getTextInputProps, touched } = useForm({
+    initialValue: {
+      title: selectedVacation?.title || '',
+      start: formatDate(new Date()),
+      end: formatDate(new Date()),
+      annualLeaveDays: selectedVacation?.annualLeaveDays || 0,
+      underOneYearAnnualLeaveDays:
+        selectedVacation?.underOneYearAnnualLeaveDays || 0
+    },
+    validate: validateLeaveForm
+  });
 
   const handleChangeStartDate = (
     event: DateTimePickerEvent,
     pickedDate?: Date
   ) => {
     setIsStartVisible(false);
-
-    if (event.type === 'set') {
-      if (pickedDate) {
-        setStartDate(pickedDate);
-      }
+    if (event.type === 'set' && pickedDate) {
+      getTextInputProps('start').onChangeText(formatDate(pickedDate));
     }
   };
 
@@ -54,11 +64,22 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
   ) => {
     setIsEndVisible(false);
 
-    if (event.type === 'set') {
-      if (pickedDate) {
-        setEndDate(pickedDate);
-      }
+    if (event.type === 'set' && pickedDate) {
+      getTextInputProps('end').onChangeText(formatDate(pickedDate));
     }
+  };
+
+  const handleSaveButton = () => {
+    const vacationInfo: VacationInfo = {
+      title: values.title,
+      start: values.start,
+      end: values.end,
+      annualLeaveDays: values.annualLeaveDays,
+      underOneYearAnnualLeaveDays: values.underOneYearAnnualLeaveDays,
+      shareWithGroup: isGroupShared
+    };
+
+    postVacationInfoMutation.mutate(vacationInfo);
   };
 
   return (
@@ -71,45 +92,78 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
           <TextInput
             style={styles.memoInput}
             placeholder='메모를 입력하세요'
-            value={memo}
-            onChangeText={(text) => setMemo(text)}
+            value={String(getTextInputProps('title').value)}
+            onChangeText={getTextInputProps('title').onChangeText}
+            onBlur={getTextInputProps('title').onBlur}
           />
+          {touched.title && (
+            <Text style={commonStyles.errorText}>{errors.title}</Text>
+          )}
         </View>
-        <View style={styles.sectionContainer}>
-          <Text style={commonStyles.textHeader}>시작일</Text>
-          <Text
-            style={styles.modalText}
-            onPress={() => setIsStartVisible(true)}
-          >
-            {startDate.toLocaleDateString()}
-          </Text>
+        <View>
+          <View style={styles.sectionContainer}>
+            <Text style={commonStyles.textHeader}>시작일</Text>
+            <Text
+              style={styles.modalText}
+              onPress={() => setIsStartVisible(true)}
+            >
+              {values.start}
+            </Text>
+          </View>
+          {touched.start && (
+            <Text style={commonStyles.errorText}>{errors.start}</Text>
+          )}
         </View>
         <View style={styles.sectionContainer}>
           <Text style={commonStyles.textHeader}>종료일</Text>
           <Text style={styles.modalText} onPress={() => setIsEndVisible(true)}>
-            {endDate.toLocaleDateString()}
+            {String(getTextInputProps('end').value)}
           </Text>
         </View>
-        <View style={styles.sectionContainer}>
-          <Text style={commonStyles.textHeader}>연차 잔여 15일</Text>
-          <TextInput
-            style={styles.modalText}
-            value={annualLeaveDays.toString()}
-            onChangeText={(text) => setAnnualLeaveDays(parseFloat(text) || 0)}
-            keyboardType='numeric'
-          />
-        </View>
-        <View style={styles.sectionContainer}>
-          <Text style={commonStyles.textHeader}>1년 미만 연차 잔여 15일</Text>
-          <TextInput
-            style={styles.modalText}
-            value={underOneYearAnnualLeaveDays.toString()}
-            onChangeText={(text) =>
-              setUnderOneYearAnnualLeaveDays(parseFloat(text) || 0)
-            }
-            keyboardType='numeric'
-          />
-        </View>
+        <Pressable
+          onPress={() => annualLeaveRef.current?.focus()}
+          style={{ flex: 1 }}
+        >
+          <View style={[commonStyles.row, { gap: 30 }]}>
+            <Text style={commonStyles.textHeader}>연차 잔여 15일</Text>
+            <TextInput
+              ref={annualLeaveRef}
+              style={styles.modalText}
+              value={String(getTextInputProps('annualLeaveDays').value)}
+              onChangeText={getTextInputProps('annualLeaveDays').onChangeText}
+              onBlur={getTextInputProps('annualLeaveDays').onBlur}
+              keyboardType='numeric'
+            />
+          </View>
+          {touched.annualLeaveDays && (
+            <Text style={commonStyles.errorText}>{errors.annualLeaveDays}</Text>
+          )}
+        </Pressable>
+        <Pressable
+          onPress={() => underOneYearAnnualLeaveRef.current?.focus()}
+          style={{ flex: 1 }}
+        >
+          <View style={[commonStyles.row, { gap: 30 }]}>
+            <Text style={commonStyles.textHeader}>1년 미만 연차 잔여 15일</Text>
+            <TextInput
+              ref={underOneYearAnnualLeaveRef}
+              style={styles.modalText}
+              value={String(
+                getTextInputProps('underOneYearAnnualLeaveDays').value
+              )}
+              onChangeText={
+                getTextInputProps('underOneYearAnnualLeaveDays').onChangeText
+              }
+              onBlur={getTextInputProps('underOneYearAnnualLeaveDays').onBlur}
+              keyboardType='numeric'
+            />
+          </View>
+          {touched.underOneYearAnnualLeaveDays && (
+            <Text style={commonStyles.errorText}>
+              {errors.underOneYearAnnualLeaveDays}
+            </Text>
+          )}
+        </Pressable>
         <View style={styles.sectionContainer}>
           <Text style={commonStyles.textHeader}>그룹 공유</Text>
           <Switch
@@ -122,17 +176,21 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
         <ButtonRow
           primaryTitle='저장'
           secondaryTitle='취소'
+          onPrimaryPress={handleSaveButton}
           onSecondaryPress={closeModal}
         />
 
         {isStartVisible && (
           <DatePickerOption
-            date={startDate}
+            date={new Date(values.start)}
             onChangeDate={handleChangeStartDate}
           />
         )}
         {isEndVisible && (
-          <DatePickerOption date={endDate} onChangeDate={handleChangeEndDate} />
+          <DatePickerOption
+            date={new Date(values.end)}
+            onChangeDate={handleChangeEndDate}
+          />
         )}
       </View>
     </ScrollView>
@@ -153,7 +211,6 @@ const styles = StyleSheet.create({
   sectionContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
     gap: 30
   },
   memoInput: {

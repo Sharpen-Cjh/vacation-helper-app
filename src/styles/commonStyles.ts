@@ -76,5 +76,11 @@ export const commonStyles = StyleSheet.create({
     padding: spacing.large,
     backgroundColor: colors.WHITE,
     borderRadius: 10
+  },
+  errorText: {
+    color: colors.RED_500,
+    fontSize: 12,
+    paddingTop: 5,
+    fontFamily: 'Gmarket-Sans-Medium'
   }
 });

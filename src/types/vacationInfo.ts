@@ -23,7 +23,7 @@ type VacationInfo = {
   title: string;
   user?: User;
   isHoliday?: boolean;
-  shareWithGroup: boolean;
+  shareWithGroup?: boolean;
 };
 
 type VacationInfoFormProps = {

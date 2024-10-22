@@ -1,6 +1,16 @@
+import { VacationInfo } from '../types/vacationInfo';
+
 type UserInformation = {
   email: string;
   password: string;
+};
+
+type VacationInfoErrors = {
+  title: string;
+  start: string;
+  end: string;
+  annualLeaveDays: string;
+  underOneYearAnnualLeaveDays: string;
 };
 
 function validateUser(values: UserInformation) {
@@ -35,4 +45,46 @@ function validateSignup(values: UserInformation & { passwordConfirm: string }) {
   return signupErrors;
 }
 
-export { validateLogin, validateSignup };
+const validateLeaveForm = (values: VacationInfo) => {
+  const errors: Record<keyof VacationInfoErrors, string> = {
+    title: '',
+    start: '',
+    end: '',
+    annualLeaveDays: '',
+    underOneYearAnnualLeaveDays: ''
+  };
+
+  if (!values.title) {
+    errors.title = '메모를 입력해주세요';
+  }
+
+  if (!values.start) {
+    errors.start = '시작일을 선택해주세요';
+  }
+
+  if (!values.end) {
+    errors.end = '종료일을 선택해주세요';
+  }
+
+  if (!values.annualLeaveDays && values.annualLeaveDays !== 0) {
+    errors.annualLeaveDays = '연차를 입력해주세요';
+  }
+
+  if (
+    !values.underOneYearAnnualLeaveDays &&
+    values.underOneYearAnnualLeaveDays !== 0
+  ) {
+    errors.underOneYearAnnualLeaveDays = '1년 미만 연차를 입력해주세요';
+  }
+
+  const startDate = new Date(values.start);
+  const endDate = new Date(values.end);
+
+  if (startDate > endDate) {
+    errors.start = '시작일은 종료일보다 앞에 있어야 합니다.';
+  }
+
+  return errors;
+};
+
+export { validateLogin, validateSignup, validateLeaveForm };

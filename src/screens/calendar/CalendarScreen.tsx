@@ -19,7 +19,6 @@ import { colors } from '@/src/styles/colors';
 import { MarkingProps } from 'react-native-calendars/src/calendar/day/marking';
 import GroupInfo from '../modals/GroupInfo/GroupInfo';
 import AccountForm from '../modals/AccountForm/AccountForm';
-import { processFontFamily } from 'expo-font';
 
 interface CustomMarkingProps extends MarkingProps {
   id?: number;
