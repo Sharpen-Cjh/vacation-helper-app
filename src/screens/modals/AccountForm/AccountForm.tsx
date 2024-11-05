@@ -8,6 +8,7 @@ import LeaveDaysForm from './LeaveDaysForm';
 import { colors } from '@/src/styles/colors';
 import useAuth from '@/src/hooks/queries/useAuth';
 import { ResponseProfile } from '@/src/api/auth';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface AccountFormProps {}
 
@@ -47,7 +48,7 @@ function AccountForm({}: AccountFormProps) {
   };
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Text style={styles.headerText}>사용자 계정</Text>
         <View style={styles.sectionContainer}>
@@ -94,28 +95,22 @@ function AccountForm({}: AccountFormProps) {
           <View style={styles.modalContainer}>{renderModalContent()}</View>
         </View>
       </Modal>
-    </>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 30,
     backgroundColor: '#ffffff',
-    borderRadius: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-    justifyContent: 'space-evenly',
-    margin: 10 // 외부 여백 추가
+    justifyContent: 'space-evenly'
   },
   headerText: {
     ...commonStyles.textHeader,
     alignSelf: 'center',
-    fontSize: 24,
+    fontSize: 20,
     marginBottom: 10
   },
   sectionContainer: {
@@ -137,7 +132,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     ...commonStyles.textHeader,
-    fontSize: 18
+    fontSize: 16
   },
   sectionContent: {
     ...commonStyles.textSubheader,

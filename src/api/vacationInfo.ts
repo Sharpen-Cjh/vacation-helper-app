@@ -1,7 +1,9 @@
 import axiosInstance from './axios';
 import type { VacationInfo } from '../types/vacationInfo';
 
-const createVacationInfoApi = async (newVacationInfo: VacationInfo) => {
+const createVacationInfoApi = async (
+  newVacationInfo: Omit<VacationInfo, 'id'>
+) => {
   const { data } = await axiosInstance.post('/vacation-info', newVacationInfo);
   return data;
 };

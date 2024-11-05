@@ -12,4 +12,8 @@ function mergeRefs<T>(...refs: ForwardedRef<T>[]) {
   };
 }
 
-export { mergeRefs };
+function truncateText(text: string, maxLength: number): string {
+  return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+}
+
+export { mergeRefs, truncateText };

@@ -15,7 +15,7 @@ type User = {
 };
 
 type VacationInfo = {
-  id?: number;
+  id: number;
   start: string;
   end: string;
   annualLeaveDays?: number;

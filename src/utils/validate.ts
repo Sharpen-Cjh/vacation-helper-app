@@ -45,7 +45,7 @@ function validateSignup(values: UserInformation & { passwordConfirm: string }) {
   return signupErrors;
 }
 
-const validateLeaveForm = (values: VacationInfo) => {
+const validateLeaveForm = (values: Omit<VacationInfo, 'id'>) => {
   const errors: Record<keyof VacationInfoErrors, string> = {
     title: '',
     start: '',

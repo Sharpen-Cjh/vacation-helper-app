@@ -8,14 +8,16 @@ interface ButtonRowProps {
   secondaryTitle?: string;
   onPrimaryPress?: () => void;
   onSecondaryPress?: () => void;
+  primaryButtonDisabled?: boolean;
 }
 
-const ButtonRow: React.FC<ButtonRowProps> = ({
+const ButtonRow = ({
   primaryTitle,
   secondaryTitle,
   onPrimaryPress,
-  onSecondaryPress
-}) => {
+  onSecondaryPress,
+  primaryButtonDisabled = false
+}: ButtonRowProps) => {
   return (
     <View style={[commonStyles.row, styles.buttonContainer]}>
       <TouchableOpacity
@@ -26,10 +28,22 @@ const ButtonRow: React.FC<ButtonRowProps> = ({
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.button, styles.primaryButton]}
+        style={[
+          styles.button,
+          styles.primaryButton,
+          primaryButtonDisabled && styles.disabledButton
+        ]}
         onPress={onPrimaryPress}
+        disabled={primaryButtonDisabled}
       >
-        <Text style={styles.primaryButtonText}>{primaryTitle}</Text>
+        <Text
+          style={[
+            styles.primaryButtonText,
+            primaryButtonDisabled && styles.disabledButtonText
+          ]}
+        >
+          {primaryTitle}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -57,6 +71,12 @@ const styles = StyleSheet.create({
     color: colors.PRIMARY,
     fontSize: 16,
     fontFamily: 'Gmarket-Sans-Medium'
+  },
+  disabledButton: {
+    color: colors.GRAY_500
+  },
+  disabledButtonText: {
+    color: colors.GRAY_500 // 비활성화 텍스트 색상 설정
   }
 });
 

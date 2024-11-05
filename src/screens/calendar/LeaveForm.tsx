@@ -16,7 +16,7 @@ import DatePickerOption from '@/src/components/DatePickerOption';
 import { commonStyles } from '@/src/styles/commonStyles';
 import { VacationInfo } from '@/src/types/vacationInfo';
 import useVacation from '@/src/hooks/queries/useVacation';
-import formatDate from '@/src/utils/date';
+import { formatDate } from '@/src/utils';
 import useForm from '@/src/hooks/useForm';
 import { validateLeaveForm } from '@/src/utils';
 
@@ -39,15 +39,18 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
   const { values, errors, getTextInputProps, touched } = useForm({
     initialValue: {
       title: selectedVacation?.title || '',
-      start: formatDate(new Date()),
-      end: formatDate(new Date()),
+      start: selectedVacation?.start || formatDate(new Date()),
+      end:
+        selectedVacation?.end ||
+        selectedVacation?.start ||
+        formatDate(new Date()),
       annualLeaveDays: selectedVacation?.annualLeaveDays || 0,
       underOneYearAnnualLeaveDays:
         selectedVacation?.underOneYearAnnualLeaveDays || 0
     },
     validate: validateLeaveForm
   });
-
+  const isSaveDisabled = Object.values(errors).some((error) => error !== '');
   const handleChangeStartDate = (
     event: DateTimePickerEvent,
     pickedDate?: Date
@@ -70,7 +73,7 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
   };
 
   const handleSaveButton = () => {
-    const vacationInfo: VacationInfo = {
+    const vacationInfo: Omit<VacationInfo, 'id'> = {
       title: values.title,
       start: values.start,
       end: values.end,
@@ -178,6 +181,7 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
           secondaryTitle='취소'
           onPrimaryPress={handleSaveButton}
           onSecondaryPress={closeModal}
+          primaryButtonDisabled={isSaveDisabled}
         />
 
         {isStartVisible && (
