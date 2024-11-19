@@ -19,7 +19,7 @@ function useUpdateAnnualLeave(mutationOptions?: UseMutationCustomOptions) {
     mutationFn: (variables: {
       updatedAvailableAnnualLeave: number;
       updatedAvailableUnderOneYearLeaves: number;
-      dateOfJoining: Date;
+      dateOfJoining: string;
       newRecruitsMode: boolean;
     }) =>
       patchAvailableAnnualLeave(

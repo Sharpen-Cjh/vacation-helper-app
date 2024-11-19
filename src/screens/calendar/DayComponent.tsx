@@ -24,7 +24,7 @@ const DayComponent = ({ date, vacationInfos, onPress }: DayComponentProps) => {
     <Pressable
       style={{
         width: '100%',
-        height: (height * 0.8) / 6,
+        height: height / 6,
         borderWidth: 1,
         borderColor: colors.GRAY_200,
         paddingLeft: 5,

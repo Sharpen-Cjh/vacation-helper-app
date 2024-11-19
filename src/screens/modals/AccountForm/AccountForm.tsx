@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, StyleSheet, Text, View, Pressable } from 'react-native';
 import NickNameForm from './NickNameForm';
 import PasswordForm from './PasswordForm';
-import LeaveDaysForm from './LeaveDaysForm';
+import AnnualLeaveForm from './AnnualLeaveForm';
 import { colors } from '@/src/styles/colors';
 import useAuth from '@/src/hooks/queries/useAuth';
 import { ResponseProfile } from '@/src/api/auth';
@@ -43,7 +43,7 @@ function AccountForm({}: AccountFormProps) {
       case 'password':
         return <PasswordForm closeModal={closeModal} />;
       case 'leaveDays':
-        return <LeaveDaysForm closeModal={closeModal} />;
+        return <AnnualLeaveForm closeModal={closeModal} />;
     }
   };
 
@@ -72,7 +72,7 @@ function AccountForm({}: AccountFormProps) {
         </View>
         <View style={styles.sectionContainer}>
           <View style={styles.rowContainer}>
-            <Text style={styles.sectionTitle}>잔여 휴가 일수</Text>
+            <Text style={styles.sectionTitle}>잔여 연차 일수</Text>
             <Pressable onPress={() => openModal('leaveDays')}>
               <MaterialCommunityIcons name='pencil' style={styles.iconSmall} />
             </Pressable>

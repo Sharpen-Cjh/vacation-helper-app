@@ -9,7 +9,6 @@ import {
   Pressable
 } from 'react-native';
 import { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { DateData } from 'react-native-calendars';
 
 import ButtonRow from '@/src/components/\bButtonRow';
 import DatePickerOption from '@/src/components/DatePickerOption';
@@ -18,15 +17,14 @@ import { VacationInfo } from '@/src/types/vacationInfo';
 import useVacation from '@/src/hooks/queries/useVacation';
 import { formatDate } from '@/src/utils';
 import useForm from '@/src/hooks/useForm';
-import { validateLeaveForm } from '@/src/utils';
+import { validateEventForm } from '@/src/utils';
 
 type LeaveFormProps = {
   selectedVacation: VacationInfo | null;
-  selectedDate: DateData | null;
   closeModal: () => void;
 };
 
-function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
+function EventForm({ selectedVacation, closeModal }: LeaveFormProps) {
   const [isStartVisible, setIsStartVisible] = useState<boolean>(false);
   const [isEndVisible, setIsEndVisible] = useState<boolean>(false);
   const [isGroupShared, setIsGroupShared] = useState<boolean>(false);
@@ -36,41 +34,34 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
 
   const { postVacationInfoMutation } = useVacation();
 
+  const {
+    title = '',
+    start,
+    end,
+    annualLeaveDays = 0,
+    underOneYearAnnualLeaveDays = 0
+  } = selectedVacation || {};
+
   const { values, errors, getTextInputProps, touched } = useForm({
     initialValue: {
-      title: selectedVacation?.title || '',
-      start: selectedVacation?.start || formatDate(new Date()),
-      end:
-        selectedVacation?.end ||
-        selectedVacation?.start ||
-        formatDate(new Date()),
-      annualLeaveDays: selectedVacation?.annualLeaveDays || 0,
-      underOneYearAnnualLeaveDays:
-        selectedVacation?.underOneYearAnnualLeaveDays || 0
+      title,
+      start: start || formatDate(new Date()),
+      end: end || start || formatDate(new Date()),
+      annualLeaveDays,
+      underOneYearAnnualLeaveDays
     },
-    validate: validateLeaveForm
+    validate: validateEventForm
   });
   const isSaveDisabled = Object.values(errors).some((error) => error !== '');
-  const handleChangeStartDate = (
-    event: DateTimePickerEvent,
-    pickedDate?: Date
-  ) => {
-    setIsStartVisible(false);
-    if (event.type === 'set' && pickedDate) {
-      getTextInputProps('start').onChangeText(formatDate(pickedDate));
-    }
-  };
 
-  const handleChangeEndDate = (
-    event: DateTimePickerEvent,
-    pickedDate?: Date
-  ) => {
-    setIsEndVisible(false);
-
-    if (event.type === 'set' && pickedDate) {
-      getTextInputProps('end').onChangeText(formatDate(pickedDate));
-    }
-  };
+  const handleDateChange =
+    (field: 'start' | 'end') =>
+    (event: DateTimePickerEvent, pickedDate?: Date) => {
+      if (event.type === 'set' && pickedDate) {
+        getTextInputProps(field).onChangeText(formatDate(pickedDate));
+      }
+      field === 'start' ? setIsStartVisible(false) : setIsEndVisible(false);
+    };
 
   const handleSaveButton = () => {
     const vacationInfo: Omit<VacationInfo, 'id'> = {
@@ -83,13 +74,14 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
     };
 
     postVacationInfoMutation.mutate(vacationInfo);
+    closeModal();
   };
 
   return (
     <ScrollView>
       <View style={styles.leaveForm}>
         <View>
-          <Text style={[commonStyles.textHeader, { marginBottom: 10 }]}>
+          <Text style={[commonStyles.textBody, { marginBottom: 10 }]}>
             메모
           </Text>
           <TextInput
@@ -105,7 +97,7 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
         </View>
         <View>
           <View style={styles.sectionContainer}>
-            <Text style={commonStyles.textHeader}>시작일</Text>
+            <Text style={commonStyles.textBody}>시작일</Text>
             <Text
               style={styles.modalText}
               onPress={() => setIsStartVisible(true)}
@@ -118,7 +110,7 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
           )}
         </View>
         <View style={styles.sectionContainer}>
-          <Text style={commonStyles.textHeader}>종료일</Text>
+          <Text style={commonStyles.textBody}>종료일</Text>
           <Text style={styles.modalText} onPress={() => setIsEndVisible(true)}>
             {String(getTextInputProps('end').value)}
           </Text>
@@ -128,7 +120,7 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
           style={{ flex: 1 }}
         >
           <View style={[commonStyles.row, { gap: 30 }]}>
-            <Text style={commonStyles.textHeader}>연차 잔여 15일</Text>
+            <Text style={commonStyles.textBody}>연차 잔여 15일</Text>
             <TextInput
               ref={annualLeaveRef}
               style={styles.modalText}
@@ -147,7 +139,7 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
           style={{ flex: 1 }}
         >
           <View style={[commonStyles.row, { gap: 30 }]}>
-            <Text style={commonStyles.textHeader}>1년 미만 연차 잔여 15일</Text>
+            <Text style={commonStyles.textBody}>1년 미만 연차 잔여 15일</Text>
             <TextInput
               ref={underOneYearAnnualLeaveRef}
               style={styles.modalText}
@@ -168,7 +160,7 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
           )}
         </Pressable>
         <View style={styles.sectionContainer}>
-          <Text style={commonStyles.textHeader}>그룹 공유</Text>
+          <Text style={commonStyles.textBody}>그룹 공유</Text>
           <Switch
             onChange={() => {
               setIsGroupShared(!isGroupShared);
@@ -187,13 +179,13 @@ function LeaveForm({ selectedVacation, closeModal }: LeaveFormProps) {
         {isStartVisible && (
           <DatePickerOption
             date={new Date(values.start)}
-            onChangeDate={handleChangeStartDate}
+            onChangeDate={handleDateChange('start')}
           />
         )}
         {isEndVisible && (
           <DatePickerOption
             date={new Date(values.end)}
-            onChangeDate={handleChangeEndDate}
+            onChangeDate={handleDateChange('end')}
           />
         )}
       </View>
@@ -235,4 +227,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default LeaveForm;
+export default EventForm;

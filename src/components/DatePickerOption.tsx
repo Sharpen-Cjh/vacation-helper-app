@@ -26,6 +26,7 @@ function DatePickerOption({ date, onChangeDate }: DatePickerOptionProps) {
           mode='date'
           textColor={colors.BLACK}
           onChange={handleChange}
+          locale='ko-KR'
         />
       ) : (
         <DateTimePicker
@@ -33,6 +34,7 @@ function DatePickerOption({ date, onChangeDate }: DatePickerOptionProps) {
           value={date}
           mode='date'
           onChange={handleChange}
+          locale='ko-KR'
         />
       )}
     </>

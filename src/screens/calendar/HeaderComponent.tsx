@@ -5,9 +5,13 @@ import { colors } from '@/src/styles/colors';
 
 type HeaderComponentProps = {
   monthYear: string;
+  handleCreateVacationButton: () => void;
 };
 
-function HeaderComponent({ monthYear }: HeaderComponentProps) {
+function HeaderComponent({
+  monthYear,
+  handleCreateVacationButton
+}: HeaderComponentProps) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <Text
@@ -19,7 +23,10 @@ function HeaderComponent({ monthYear }: HeaderComponentProps) {
       >
         {monthYear}
       </Text>
-      <Pressable style={{ flexDirection: 'row', gap: 15 }}>
+      <Pressable
+        style={{ flexDirection: 'row', gap: 15 }}
+        onPress={handleCreateVacationButton}
+      >
         <Ionicons name='add-circle-outline' size={40} color={colors.PRIMARY} />
       </Pressable>
     </View>

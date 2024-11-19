@@ -13,6 +13,11 @@ type VacationInfoErrors = {
   underOneYearAnnualLeaveDays: string;
 };
 
+type AnnualLeaveInfoErrors = {
+  updatedAvailableAnnualLeave: string;
+  updatedAvailableUnderOneYearLeaves: string;
+};
+
 function validateUser(values: UserInformation) {
   const errors = {
     email: '',
@@ -45,7 +50,7 @@ function validateSignup(values: UserInformation & { passwordConfirm: string }) {
   return signupErrors;
 }
 
-const validateLeaveForm = (values: Omit<VacationInfo, 'id'>) => {
+const validateEventForm = (values: Omit<VacationInfo, 'id'>) => {
   const errors: Record<keyof VacationInfoErrors, string> = {
     title: '',
     start: '',
@@ -87,4 +92,30 @@ const validateLeaveForm = (values: Omit<VacationInfo, 'id'>) => {
   return errors;
 };
 
-export { validateLogin, validateSignup, validateLeaveForm };
+const validateAnnualLeaveForm = (values: {
+  updatedAvailableAnnualLeave: number;
+  updatedAvailableUnderOneYearLeaves: number;
+}) => {
+  const errors: Record<keyof AnnualLeaveInfoErrors, string> = {
+    updatedAvailableAnnualLeave: '',
+    updatedAvailableUnderOneYearLeaves: ''
+  };
+
+  if (values.updatedAvailableAnnualLeave < 0) {
+    errors.updatedAvailableAnnualLeave = '연차는 0 이상이어야 합니다.';
+  }
+
+  if (values.updatedAvailableUnderOneYearLeaves < 0) {
+    errors.updatedAvailableUnderOneYearLeaves =
+      '1년 미만 연차는 0 이상이어야 합니다.';
+  }
+
+  return errors;
+};
+
+export {
+  validateLogin,
+  validateSignup,
+  validateEventForm,
+  validateAnnualLeaveForm
+};

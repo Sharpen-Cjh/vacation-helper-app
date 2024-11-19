@@ -4,7 +4,8 @@ import {
   Text,
   Dimensions,
   FlatList,
-  Pressable
+  Pressable,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar, DateData, LocaleConfig } from 'react-native-calendars';
@@ -18,6 +19,8 @@ import { formatVacationDataForMarkedDates } from '@/src/utils';
 import useVacation from '@/src/hooks/queries/useVacation';
 import type { VacationInfo } from '@/src/types/vacationInfo';
 import { colors } from '@/src/styles/colors';
+import CommonModal from '../modals/CommonModal';
+import EventForm from './EventForm';
 
 LocaleConfig.locales['ko'] = {
   monthNames: [
@@ -53,12 +56,14 @@ const { height } = Dimensions.get('window');
 
 function CalendarScreen() {
   const [modalVisible, setModalVisible] = useState(false);
+  const [commonModalVisible, setCommonModalVisible] = useState<boolean>(false);
   const [selectedVacation, setSelectedVacation] = useState<VacationInfo | null>(
     null
   );
   const [selectedVacations, setSelectedVacations] = useState<VacationInfo[]>(
     []
   );
+  const [selectedDate, setSelectedDate] = useState<string>('');
 
   const { getAllVacationQuery } = useVacation();
 
@@ -68,6 +73,11 @@ function CalendarScreen() {
       )
     : {};
 
+  const showLeaveForm = (vacationInfo: VacationInfo | null) => {
+    setSelectedVacation(vacationInfo);
+    setCommonModalVisible(true);
+  };
+
   const renderHeader = (date: string) => {
     const parsedDate = new Date(date);
     const monthYear = parsedDate.toLocaleDateString('ko-KR', {
@@ -75,7 +85,31 @@ function CalendarScreen() {
       month: 'long'
     });
 
-    return <HeaderComponent monthYear={monthYear} />;
+    return (
+      <HeaderComponent
+        monthYear={monthYear}
+        handleCreateVacationButton={() => {
+          showLeaveForm(null);
+        }}
+      />
+    );
+  };
+
+  const handleDayPress = (date: DateData, vacations: VacationInfo[]) => {
+    if (vacations.length === 0) return;
+
+    const selectedDateLabel = new Date(date.dateString).toLocaleDateString(
+      'ko-KR',
+      {
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+      }
+    );
+
+    setSelectedVacations(vacations);
+    setSelectedDate(selectedDateLabel);
+    openBottomSheet();
   };
 
   const renderDayComponent = ({ date }: { date: DateData }) => {
@@ -84,7 +118,7 @@ function CalendarScreen() {
       <DayComponent
         date={date}
         vacationInfos={vacationInfos}
-        onPress={() => handleDayPress(vacationInfos)}
+        onPress={() => handleDayPress(date, vacationInfos)}
       />
     );
   };
@@ -97,24 +131,17 @@ function CalendarScreen() {
     setModalVisible(false);
   };
 
-  const handleDayPress = (vacations: VacationInfo[]) => {
-    if (vacations.length === 0) return;
-
-    setSelectedVacations(vacations);
-    openBottomSheet();
-  };
-
   const renderVacationInfo = ({ item }: { item: VacationInfo }) => (
     <Pressable
       style={[
         styles.vacationInfoContainer,
         { flexDirection: 'row', justifyContent: 'space-between' }
       ]}
+      onPress={() => {
+        showLeaveForm(item);
+      }}
     >
       <Text style={styles.vacationInfoText}>{item.title}</Text>
-      <Text style={styles.vacationInfoText}>
-        {item.start} - {item.end}
-      </Text>
     </Pressable>
   );
 
@@ -157,19 +184,38 @@ function CalendarScreen() {
           }
         }}
         style={styles.calendarContainer}
-        onDayPress={handleDayPress}
         markedDates={markedDates}
         enableSwipeMonths={true}
         hideArrows={true}
       />
-      <BottomSheetModal visible={modalVisible} onClose={closeBottomSheet}>
-        <FlatList
-          data={selectedVacations}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderVacationInfo}
-          contentContainerStyle={styles.vacationListContainer}
-          showsVerticalScrollIndicator={true}
+      <CommonModal
+        modalVisible={commonModalVisible}
+        closeModal={() => setCommonModalVisible(false)}
+      >
+        <EventForm
+          selectedVacation={selectedVacation}
+          closeModal={() => setCommonModalVisible(false)}
         />
+      </CommonModal>
+      <BottomSheetModal visible={modalVisible} onClose={closeBottomSheet}>
+        <View>
+          <View
+            style={{
+              borderBottomWidth: 1,
+              borderBottomColor: colors.GRAY_200,
+              padding: 10
+            }}
+          >
+            <Text>{selectedDate}</Text>
+          </View>
+          <FlatList
+            data={selectedVacations}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderVacationInfo}
+            contentContainerStyle={styles.vacationListContainer}
+            showsVerticalScrollIndicator={true}
+          />
+        </View>
       </BottomSheetModal>
     </SafeAreaView>
   );
@@ -186,15 +232,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   vacationInfoContainer: {
+    height: 50,
     marginBottom: 10,
     padding: 10,
-    backgroundColor: colors.PRIMARY,
-    borderRadius: 8
+    borderRadius: 2,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderLeftWidth: 5,
+    borderRightWidth: 1,
+    borderRightColor: colors.GRAY_200,
+    borderBlockColor: colors.GRAY_200,
+    borderLeftColor: colors.PRIMARY
   },
   vacationInfoText: {
     fontSize: 10,
-    fontFamily: 'Gmarket-Sans-Medium',
-    color: colors.WHITE
+    fontFamily: 'Gmarket-Sans-Medium'
   }
 });
 

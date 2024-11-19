@@ -29,7 +29,7 @@ function BottomBorderedInput({
         style={commonStyles.textBody}
         placeholder={placeholder}
         value={value}
-        onChangeText={onChangeText} //
+        onChangeText={onChangeText}
         {...props}
         autoCapitalize='none'
         spellCheck={false}

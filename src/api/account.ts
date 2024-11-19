@@ -17,7 +17,7 @@ const patchPassword = async (currentPassword: string, newPassword: string) => {
 const patchAvailableAnnualLeave = async (
   updatedAvailableAnnualLeave: number,
   updatedAvailableUnderOneYearLeaves: number,
-  dateOfJoining: Date,
+  dateOfJoining: string,
   newRecruitsMode: boolean
 ) => {
   const { data } = await axiosInstance.patch(
