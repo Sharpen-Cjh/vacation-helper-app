@@ -35,13 +35,13 @@ function BottomTabNavigator() {
             />
           );
         },
+        tabBarShowLabel: false,
         tabBarActiveTintColor: colors.PRIMARY,
         tabBarInactiveTintColor: 'gray',
         headerShown: false
       })}
     >
       <Tab.Screen name='Calendar' component={CalendarScreen} />
-      <Tab.Screen name='Account' component={AccountForm} />
       <Tab.Screen name='Group' component={GroupList} />
       {/* <Tab.Screen name='VacationList' component={VacationList} /> */}
     </Tab.Navigator>

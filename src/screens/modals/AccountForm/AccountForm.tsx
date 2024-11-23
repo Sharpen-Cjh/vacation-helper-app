@@ -7,8 +7,7 @@ import PasswordForm from './PasswordForm';
 import AnnualLeaveForm from './AnnualLeaveForm';
 import { colors } from '@/src/styles/colors';
 import useAuth from '@/src/hooks/queries/useAuth';
-import { ResponseProfile } from '@/src/api/auth';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { UserProfile } from '@/src/types/auth';
 
 interface AccountFormProps {}
 
@@ -18,11 +17,11 @@ function AccountForm({}: AccountFormProps) {
     'nickname' | 'password' | 'leaveDays' | null
   >(null);
   const { getProfileQuery } = useAuth();
-  const [userInfo, setUserInfo] = useState<ResponseProfile | null>(null);
+  const [userInfo, setUserInfo] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     if (getProfileQuery.isSuccess && getProfileQuery.data) {
-      setUserInfo(getProfileQuery.data as ResponseProfile);
+      setUserInfo(getProfileQuery.data as UserProfile);
     }
   }, [getProfileQuery.isSuccess, getProfileQuery.data]);
 
@@ -48,9 +47,8 @@ function AccountForm({}: AccountFormProps) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <>
       <View style={styles.container}>
-        <Text style={styles.headerText}>사용자 계정</Text>
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>이메일</Text>
           <Text style={styles.sectionContent}>{userInfo?.email}</Text>
@@ -95,7 +93,7 @@ function AccountForm({}: AccountFormProps) {
           <View style={styles.modalContainer}>{renderModalContent()}</View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </>
   );
 }
 

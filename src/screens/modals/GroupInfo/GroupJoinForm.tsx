@@ -1,17 +1,26 @@
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import ButtonRow from '@/src/components/\bButtonRow';
 import BottomBorderedInput from '@/src/components/BottomBorderedInput';
 import { commonStyles } from '@/src/styles/commonStyles';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
+import useGroupInfo from '@/src/hooks/queries/useGroup';
 
 interface GroupJoinFormProps {
   closeModal: () => void;
 }
-const handlePressSaveButton = () => {
-  console.log('save');
-};
+
 function GroupJoinForm({ closeModal }: GroupJoinFormProps) {
   const [groupCode, setGroupCode] = useState<string>('');
+  const { joinGroupMutation } = useGroupInfo();
+
+  const handlePressSaveButton = () => {
+    joinGroupMutation.mutate(groupCode, {
+      onSuccess: () => {
+        closeModal();
+      }
+    });
+  };
 
   return (
     <View style={{ gap: 10 }}>

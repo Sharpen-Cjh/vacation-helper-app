@@ -1,6 +1,6 @@
 import axiosInstance from './axios';
 import { getEncryptStorage } from '../utils';
-
+import type { UserProfile } from '../types/auth';
 type RequestUser = {
   email: string;
   password: string;
@@ -30,29 +30,10 @@ const postLogin = async ({
   return data;
 };
 
-type ResponseProfile = {
-  id: number;
-  name: string;
-  email: string;
-  additionalUnderOneYearLeaveAdded: number;
-  availableAnnualLeaves: number;
-  availableUnderOneYearLeaves: number;
-  newRecruitsMode: boolean;
-  dateOfJoining: Date;
-  createdAt: Date;
-  deletedAt: Date | null;
-  updatedAt: Date;
-};
-
-const getProfile = async (): Promise<ResponseProfile> => {
+const getProfile = async (): Promise<UserProfile> => {
   const { data } = await axiosInstance.get('/auth/me');
-  return data;
+  return data as UserProfile;
 };
-
-// const getUserInfoApi = async () => {
-//   const { data } = await axiosInstance.get('/auth/user-info');
-//   return data;
-// };
 
 const getAccessToken = async (): Promise<ResponseToken> => {
   const refreshToken = await getEncryptStorage('refreshToken');
@@ -69,4 +50,4 @@ const logout = async (): Promise<void> => {
 };
 
 export { postSignup, postLogin, getAccessToken, logout, getProfile };
-export type { RequestUser, ResponseToken, ResponseProfile };
+export type { RequestUser, ResponseToken, UserProfile };

@@ -16,6 +16,7 @@ type VacationInfoErrors = {
 type AnnualLeaveInfoErrors = {
   updatedAvailableAnnualLeave: string;
   updatedAvailableUnderOneYearLeaves: string;
+  dateOfJoining: string;
 };
 
 function validateUser(values: UserInformation) {
@@ -95,11 +96,25 @@ const validateEventForm = (values: Omit<VacationInfo, 'id'>) => {
 const validateAnnualLeaveForm = (values: {
   updatedAvailableAnnualLeave: number;
   updatedAvailableUnderOneYearLeaves: number;
+  dateOfJoining: string;
 }) => {
   const errors: Record<keyof AnnualLeaveInfoErrors, string> = {
     updatedAvailableAnnualLeave: '',
-    updatedAvailableUnderOneYearLeaves: ''
+    updatedAvailableUnderOneYearLeaves: '',
+    dateOfJoining: ''
   };
+
+  const today = new Date();
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+  const dateOfJoining = new Date(values.dateOfJoining);
+
+  if (dateOfJoining > today) {
+    errors.dateOfJoining = '입사 날짜는 오늘 이전이어야 힙니다.';
+  } else if (dateOfJoining < oneYearAgo) {
+    errors.dateOfJoining = '입사 날짜는 1년 이내여야 합니다.';
+  }
 
   if (values.updatedAvailableAnnualLeave < 0) {
     errors.updatedAvailableAnnualLeave = '연차는 0 이상이어야 합니다.';
@@ -113,9 +128,30 @@ const validateAnnualLeaveForm = (values: {
   return errors;
 };
 
+const validateGroupCreateForm = (values: { groupName: string }) => {
+  const errors = {
+    groupName: ''
+  };
+
+  if (!values.groupName.trim()) {
+    errors.groupName = '그룹 이름을 입력해주세요.';
+  }
+
+  if (values.groupName.length < 2) {
+    errors.groupName = '그룹 이름은 최소 2자 이상이어야 합니다.';
+  }
+
+  if (values.groupName.length > 10) {
+    errors.groupName = '그룹 이름은 최대 10자 이하이어야 합니다.';
+  }
+
+  return errors;
+};
+
 export {
   validateLogin,
   validateSignup,
   validateEventForm,
-  validateAnnualLeaveForm
+  validateAnnualLeaveForm,
+  validateGroupCreateForm
 };

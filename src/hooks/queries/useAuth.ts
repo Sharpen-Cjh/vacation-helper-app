@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import {
   getAccessToken,
@@ -13,8 +14,9 @@ import {
 } from '@/src/types/common';
 import { removeEncryptStorage, setEncryptStorage } from '@/src/utils';
 import { removeHeader, setHeader } from '@/src/utils/headers';
-import { useEffect } from 'react';
 import queryClient from '@/src/api/queryClient';
+
+import type { UserProfile } from '@/src/types/auth';
 
 function useSignUp(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({

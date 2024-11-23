@@ -17,11 +17,12 @@ function useForm<T>({ initialValue, validate }: UseFormProps<T>) {
     });
   };
 
-  const handleBlur = (name: keyof T) =>
+  const handleBlur = (name: keyof T) => {
     setTouched({
       ...touched,
       [name]: true
     });
+  };
 
   const getTextInputProps = (name: keyof T) => {
     const value = values[name];

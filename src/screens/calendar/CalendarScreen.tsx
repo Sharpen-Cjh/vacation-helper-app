@@ -64,7 +64,6 @@ function CalendarScreen() {
     []
   );
   const [selectedDate, setSelectedDate] = useState<string>('');
-
   const { getAllVacationQuery } = useVacation();
 
   const markedDates = getAllVacationQuery.isSuccess

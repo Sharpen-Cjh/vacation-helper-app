@@ -15,6 +15,7 @@ import {
   validateAnnualLeaveForm
 } from '@/src/utils';
 import InputField from '@/src/components/InputField';
+import { colors } from '@/src/styles/colors';
 
 interface LeaveDaysFormProps {
   closeModal: () => void;
@@ -23,7 +24,7 @@ interface LeaveDaysFormProps {
 function AnnualLeaveForm({ closeModal }: LeaveDaysFormProps) {
   const updateAnnualLeaveMutation = useUpdateAnnualLeave();
   const { getProfileQuery } = useAuth();
-  const { values, getTextInputProps, setValues } = useForm({
+  const { values, getTextInputProps, setValues, errors } = useForm({
     initialValue: {
       updatedAvailableAnnualLeave: 0,
       updatedAvailableUnderOneYearLeaves: 0,
@@ -36,7 +37,14 @@ function AnnualLeaveForm({ closeModal }: LeaveDaysFormProps) {
   const [isJoiningDatePickerVisible, setIsJoiningDatePickerVisible] =
     useState<boolean>(false);
 
-  const handleChangeDate = (event: DateTimePickerEvent, pickedDate?: Date) => {
+  const handlePressDatePicker = () => {
+    setIsJoiningDatePickerVisible(true);
+  };
+
+  const handleChangeDateOfJoining = (
+    event: DateTimePickerEvent,
+    pickedDate?: Date
+  ) => {
     if (event.type === 'set' && pickedDate) {
       getTextInputProps('dateOfJoining').onChangeText(formatDate(pickedDate));
     }
@@ -52,7 +60,6 @@ function AnnualLeaveForm({ closeModal }: LeaveDaysFormProps) {
   const handleChangeNewRecruitsMode = () => {
     setValues((prevValues) => {
       const newRecruitsMode = !prevValues.newRecruitsMode;
-
       // 신입사원 모드가 켜졌을 때 입사 날짜를 오늘로 변경
       const dateOfJoining = newRecruitsMode
         ? formatDate(new Date())
@@ -117,14 +124,20 @@ function AnnualLeaveForm({ closeModal }: LeaveDaysFormProps) {
 
       {values.newRecruitsMode && (
         <View style={{ gap: 20 }}>
-          <Pressable
-            onPress={() => {
-              setIsJoiningDatePickerVisible(true);
-            }}
-            style={{ gap: 20 }}
-          >
+          <Pressable onPress={handlePressDatePicker} style={{ gap: 20 }}>
             <Text style={commonStyles.textBody}>입사 날짜</Text>
             <Text>{values.dateOfJoining}</Text>
+            {errors.dateOfJoining && (
+              <Text
+                style={{
+                  color: colors.RED_500,
+                  fontSize: 12,
+                  paddingTop: 5
+                }}
+              >
+                {errors.dateOfJoining}
+              </Text>
+            )}
           </Pressable>
           <View style={{ gap: 20 }}>
             <Text style={commonStyles.textBody}>
@@ -156,11 +169,12 @@ function AnnualLeaveForm({ closeModal }: LeaveDaysFormProps) {
         secondaryTitle='취소'
         onPrimaryPress={handlePressSaveButton}
         onSecondaryPress={closeModal}
+        primaryButtonDisabled={Object.values(errors).some((error) => !!error)}
       />
       {isJoiningDatePickerVisible && (
         <DatePickerOption
           date={new Date(values.dateOfJoining)}
-          onChangeDate={handleChangeDate}
+          onChangeDate={handleChangeDateOfJoining}
         />
       )}
     </View>
