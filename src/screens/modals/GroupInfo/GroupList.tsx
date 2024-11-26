@@ -21,7 +21,7 @@ import GroupDetail from './GroupDetail';
 import GroupCreateForm from './GroupCreateForm';
 
 import type { GroupListItem } from '@/src/types/group';
-import ConfirmLeaveGroup from './ConfirmLeaveGroup';
+import ConfirmActionModal from './ConfirmActionModal';
 
 function GroupList() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -65,13 +65,16 @@ function GroupList() {
         return <GroupJoinForm closeModal={closeModal} />;
       case 'groupDetail':
         return selectedGroup ? (
-          <GroupDetail groupID={selectedGroup.id} />
+          <GroupDetail groupId={selectedGroup.id} />
         ) : null;
       case 'confirmLeave':
         return (
-          <ConfirmLeaveGroup
+          <ConfirmActionModal
             closeModal={closeModal}
-            onConfirmLeave={leaveGroup}
+            onConfirm={leaveGroup}
+            message='정말 그룹에서 나가시겠습니까?'
+            confirmText='나가기'
+            cancelText='취소'
           />
         );
     }
@@ -155,7 +158,7 @@ function GroupList() {
       <View style={{ flex: 1, padding: 20, justifyContent: 'space-evenly' }}>
         <FlatList
           data={groupListData}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => String(item.id)}
           renderItem={renderGroupListItem}
           contentContainerStyle={{ gap: 20 }}
         />

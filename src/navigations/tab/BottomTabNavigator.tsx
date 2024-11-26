@@ -3,7 +3,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 import CalendarScreen from '@/src/screens/calendar/CalendarScreen';
-import AccountForm from '@/src/screens/modals/AccountForm/AccountForm';
 import GroupList from '@/src/screens/modals/GroupInfo/GroupList';
 // import VacationList from '@/src/screens/modals/VacationList';
 import { colors } from '@/src/styles/colors';
@@ -42,7 +41,11 @@ function BottomTabNavigator() {
       })}
     >
       <Tab.Screen name='Calendar' component={CalendarScreen} />
-      <Tab.Screen name='Group' component={GroupList} />
+      <Tab.Screen
+        name='Group'
+        component={CalendarScreen}
+        initialParams={{ group: true }}
+      />
       {/* <Tab.Screen name='VacationList' component={VacationList} /> */}
     </Tab.Navigator>
   );

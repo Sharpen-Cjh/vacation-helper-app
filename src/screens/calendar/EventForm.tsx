@@ -6,7 +6,8 @@ import {
   TextInput,
   Switch,
   ScrollView,
-  Pressable
+  Pressable,
+  Modal
 } from 'react-native';
 import { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
@@ -15,43 +16,60 @@ import DatePickerOption from '@/src/components/DatePickerOption';
 import { commonStyles } from '@/src/styles/commonStyles';
 import { VacationInfo } from '@/src/types/vacationInfo';
 import useVacation from '@/src/hooks/queries/useVacation';
-import { formatDate } from '@/src/utils';
 import useForm from '@/src/hooks/useForm';
-import { validateEventForm } from '@/src/utils';
+import { formatDate, validateEventForm } from '@/src/utils';
+import { UserProfile } from '@/src/types/auth';
+import { Ionicons } from '@expo/vector-icons';
+import { colors } from '@/src/styles/colors';
+import ConfirmActionModal from '../modals/GroupInfo/ConfirmActionModal';
 
-type LeaveFormProps = {
+type EventFormProps = {
   selectedVacation: VacationInfo | null;
   closeModal: () => void;
+  availableAnnualLeavesData: Partial<UserProfile>;
+  refetchVacations: () => void;
 };
 
-function EventForm({ selectedVacation, closeModal }: LeaveFormProps) {
+function EventForm({
+  selectedVacation,
+  closeModal,
+  availableAnnualLeavesData,
+  refetchVacations
+}: EventFormProps) {
   const [isStartVisible, setIsStartVisible] = useState<boolean>(false);
   const [isEndVisible, setIsEndVisible] = useState<boolean>(false);
-  const [isGroupShared, setIsGroupShared] = useState<boolean>(false);
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
   const annualLeaveRef = useRef<TextInput>(null);
   const underOneYearAnnualLeaveRef = useRef<TextInput>(null);
 
-  const { postVacationInfoMutation } = useVacation();
+  const {
+    postVacationInfoMutation,
+    updateVacationInfoMutation,
+    deleteVacationInfoMutation
+  } = useVacation(null);
 
   const {
     title = '',
     start,
     end,
     annualLeaveDays = 0,
-    underOneYearAnnualLeaveDays = 0
+    underOneYearAnnualLeaveDays = 0,
+    shareWithGroup = false
   } = selectedVacation || {};
 
-  const { values, errors, getTextInputProps, touched } = useForm({
-    initialValue: {
-      title,
-      start: start || formatDate(new Date()),
-      end: end || start || formatDate(new Date()),
-      annualLeaveDays,
-      underOneYearAnnualLeaveDays
-    },
-    validate: validateEventForm
-  });
+  const { values, errors, getTextInputProps, getSwitchProps, touched } =
+    useForm({
+      initialValue: {
+        title,
+        start: start || formatDate(new Date()),
+        end: end || start || formatDate(new Date()),
+        annualLeaveDays,
+        underOneYearAnnualLeaveDays,
+        shareWithGroup
+      },
+      validate: validateEventForm
+    });
   const isSaveDisabled = Object.values(errors).some((error) => error !== '');
 
   const handleDateChange =
@@ -70,11 +88,44 @@ function EventForm({ selectedVacation, closeModal }: LeaveFormProps) {
       end: values.end,
       annualLeaveDays: values.annualLeaveDays,
       underOneYearAnnualLeaveDays: values.underOneYearAnnualLeaveDays,
-      shareWithGroup: isGroupShared
+      shareWithGroup: values.shareWithGroup
     };
 
-    postVacationInfoMutation.mutate(vacationInfo);
-    closeModal();
+    if (!selectedVacation) {
+      postVacationInfoMutation.mutate(vacationInfo, {
+        onSuccess: () => {
+          refetchVacations();
+          closeModal();
+        }
+      });
+    } else {
+      const vacationInfoWithID = { ...vacationInfo, id: selectedVacation.id };
+      updateVacationInfoMutation.mutate(vacationInfoWithID, {
+        onSuccess: () => {
+          refetchVacations();
+          closeModal();
+        }
+      });
+    }
+  };
+
+  const deleteEvent = () => {
+    if (selectedVacation) {
+      deleteVacationInfoMutation.mutate(selectedVacation.id, {
+        onSuccess: () => {
+          refetchVacations();
+          closeModal();
+        }
+      });
+    }
+  };
+
+  const closeConfirmModal = () => {
+    setConfirmModalVisible(false);
+  };
+
+  const handleDeleteButton = () => {
+    setConfirmModalVisible(true);
   };
 
   return (
@@ -90,6 +141,7 @@ function EventForm({ selectedVacation, closeModal }: LeaveFormProps) {
             value={String(getTextInputProps('title').value)}
             onChangeText={getTextInputProps('title').onChangeText}
             onBlur={getTextInputProps('title').onBlur}
+            multiline={true}
           />
           {touched.title && (
             <Text style={commonStyles.errorText}>{errors.title}</Text>
@@ -120,7 +172,9 @@ function EventForm({ selectedVacation, closeModal }: LeaveFormProps) {
           style={{ flex: 1 }}
         >
           <View style={[commonStyles.row, { gap: 30 }]}>
-            <Text style={commonStyles.textBody}>연차 잔여 15일</Text>
+            <Text style={commonStyles.textBody}>
+              연차 잔여 {availableAnnualLeavesData.availableAnnualLeaves}일
+            </Text>
             <TextInput
               ref={annualLeaveRef}
               style={styles.modalText}
@@ -134,47 +188,58 @@ function EventForm({ selectedVacation, closeModal }: LeaveFormProps) {
             <Text style={commonStyles.errorText}>{errors.annualLeaveDays}</Text>
           )}
         </Pressable>
-        <Pressable
-          onPress={() => underOneYearAnnualLeaveRef.current?.focus()}
-          style={{ flex: 1 }}
-        >
-          <View style={[commonStyles.row, { gap: 30 }]}>
-            <Text style={commonStyles.textBody}>1년 미만 연차 잔여 15일</Text>
-            <TextInput
-              ref={underOneYearAnnualLeaveRef}
-              style={styles.modalText}
-              value={String(
-                getTextInputProps('underOneYearAnnualLeaveDays').value
+        {typeof availableAnnualLeavesData.availableUnderOneYearLeaves ===
+          'number' &&
+          availableAnnualLeavesData.availableUnderOneYearLeaves > 0 && (
+            <Pressable
+              onPress={() => underOneYearAnnualLeaveRef.current?.focus()}
+              style={{ flex: 1 }}
+            >
+              <View style={[commonStyles.row, { gap: 30 }]}>
+                <Text style={commonStyles.textBody}>
+                  1년 미만 연차 잔여{' '}
+                  {availableAnnualLeavesData.availableUnderOneYearLeaves}일
+                </Text>
+                <TextInput
+                  ref={underOneYearAnnualLeaveRef}
+                  style={styles.modalText}
+                  value={String(
+                    getTextInputProps('underOneYearAnnualLeaveDays').value
+                  )}
+                  onChangeText={
+                    getTextInputProps('underOneYearAnnualLeaveDays')
+                      .onChangeText
+                  }
+                  onBlur={
+                    getTextInputProps('underOneYearAnnualLeaveDays').onBlur
+                  }
+                  keyboardType='numeric'
+                />
+              </View>
+              {touched.underOneYearAnnualLeaveDays && (
+                <Text style={commonStyles.errorText}>
+                  {errors.underOneYearAnnualLeaveDays}
+                </Text>
               )}
-              onChangeText={
-                getTextInputProps('underOneYearAnnualLeaveDays').onChangeText
-              }
-              onBlur={getTextInputProps('underOneYearAnnualLeaveDays').onBlur}
-              keyboardType='numeric'
-            />
-          </View>
-          {touched.underOneYearAnnualLeaveDays && (
-            <Text style={commonStyles.errorText}>
-              {errors.underOneYearAnnualLeaveDays}
-            </Text>
+            </Pressable>
           )}
-        </Pressable>
+
         <View style={styles.sectionContainer}>
           <Text style={commonStyles.textBody}>그룹 공유</Text>
-          <Switch
-            onChange={() => {
-              setIsGroupShared(!isGroupShared);
-            }}
-            value={isGroupShared}
+          <Switch {...getSwitchProps('shareWithGroup')} />
+        </View>
+        <View style={[commonStyles.row, { justifyContent: 'space-between' }]}>
+          <Pressable onPress={handleDeleteButton}>
+            <Ionicons name='trash' size={30} color={colors.PRIMARY} />
+          </Pressable>
+          <ButtonRow
+            primaryTitle='저장'
+            secondaryTitle='취소'
+            onPrimaryPress={handleSaveButton}
+            onSecondaryPress={closeModal}
+            primaryButtonDisabled={isSaveDisabled}
           />
         </View>
-        <ButtonRow
-          primaryTitle='저장'
-          secondaryTitle='취소'
-          onPrimaryPress={handleSaveButton}
-          onSecondaryPress={closeModal}
-          primaryButtonDisabled={isSaveDisabled}
-        />
 
         {isStartVisible && (
           <DatePickerOption
@@ -189,6 +254,24 @@ function EventForm({ selectedVacation, closeModal }: LeaveFormProps) {
           />
         )}
       </View>
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={confirmModalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={commonStyles.modalOverlaySmall}>
+          <View style={commonStyles.modalContainerSmall}>
+            <ConfirmActionModal
+              closeModal={closeConfirmModal}
+              onConfirm={deleteEvent}
+              message='정말 삭제 하시겠습니까?'
+              confirmText='삭제'
+              cancelText='취소'
+            />
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }

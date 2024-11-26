@@ -13,7 +13,7 @@ const getAllVacationInfoApi = async () => {
   return data;
 };
 
-const getGroupVacationsApi = async (groupId: number) => {
+const getGroupVacationsApi = async (groupId: number | null) => {
   const { data } = await axiosInstance.get(`/vacation-info/group/${groupId}`);
   return data;
 };

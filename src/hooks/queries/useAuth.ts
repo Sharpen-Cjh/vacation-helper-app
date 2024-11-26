@@ -16,8 +16,6 @@ import { removeEncryptStorage, setEncryptStorage } from '@/src/utils';
 import { removeHeader, setHeader } from '@/src/utils/headers';
 import queryClient from '@/src/api/queryClient';
 
-import type { UserProfile } from '@/src/types/auth';
-
 function useSignUp(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: postSignup,

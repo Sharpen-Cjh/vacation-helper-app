@@ -5,8 +5,8 @@ const getUserGroupListAPI = async () => {
   return data;
 };
 
-const getGroupByIdAPI = async (groupID: string) => {
-  const { data } = await axiosInstance.get(`group/${groupID}`);
+const getGroupByIdAPI = async (groupId: number) => {
+  const { data } = await axiosInstance.get(`group/${groupId}`);
   return data;
 };
 
@@ -20,18 +20,18 @@ const joinGroupAPI = async (inviteCode: string) => {
   return data;
 };
 
-const leaveGroupAPI = async (groupID: string) => {
-  const { data } = await axiosInstance.delete(`group/${groupID}/leave`);
+const leaveGroupAPI = async (groupId: number) => {
+  const { data } = await axiosInstance.delete(`group/${groupId}/leave`);
   return data;
 };
 
 type UpdatedGroupInfo = {
-  groupID: string;
+  groupId: string;
   groupName: string;
 };
 
-const updateGroupInfoAPI = async ({ groupID, groupName }: UpdatedGroupInfo) => {
-  const { data } = await axiosInstance.put(`/group/${groupID}/update`, {
+const updateGroupInfoAPI = async ({ groupId, groupName }: UpdatedGroupInfo) => {
+  const { data } = await axiosInstance.put(`/group/${groupId}/update`, {
     name: groupName
   });
 

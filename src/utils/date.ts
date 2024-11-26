@@ -1,3 +1,4 @@
+import { UserProfile } from '../types/auth';
 import { VacationInfo } from '../types/vacationInfo';
 
 const formatDate = (date: Date): string => {

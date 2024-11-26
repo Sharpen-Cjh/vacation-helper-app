@@ -12,6 +12,7 @@ import { colors } from '@/src/styles/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Alert, View, StyleSheet, Pressable, Text } from 'react-native';
 import useAuth from '@/src/hooks/queries/useAuth';
+
 const Drawer = createDrawerNavigator();
 
 function MainDrawerNavigator() {
@@ -40,7 +41,11 @@ function MainDrawerNavigator() {
 
         <View style={styles.logoutContainer}>
           <Pressable style={styles.logoutButton} onPress={handleLogout}>
-            <Ionicons name='log-out-outline' size={20} color={colors.PRIMARY} />
+            <Ionicons
+              name='log-out-outline'
+              size={20}
+              color={colors.GRAY_500}
+            />
             <Text style={styles.logoutText}>로그아웃</Text>
           </Pressable>
         </View>
@@ -108,7 +113,7 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: 16,
     fontFamily: 'Gmarket-Sans-Medium',
-    color: colors.PRIMARY
+    color: colors.GRAY_500
   }
 });
 

@@ -11,9 +11,15 @@ interface DayComponentProps {
   date: DateData;
   vacationInfos: VacationInfo[];
   onPress: () => void;
+  currentUserId?: number;
 }
 
-const DayComponent = ({ date, vacationInfos, onPress }: DayComponentProps) => {
+const DayComponent = ({
+  date,
+  vacationInfos,
+  onPress,
+  currentUserId
+}: DayComponentProps) => {
   const isToday = date.dateString === new Date().toISOString().split('T')[0];
   const dayOfWeek = new Date(date.dateString).getDay();
 
@@ -52,29 +58,35 @@ const DayComponent = ({ date, vacationInfos, onPress }: DayComponentProps) => {
           {date.day}
         </Text>
       </View>
-      {vacationInfos.slice(0, 3).map((vacation, index) => (
-        <View
-          key={index}
-          style={{
-            width: '100%',
-            backgroundColor: colors.PRIMARY,
-            marginVertical: 1,
-            borderRadius: 2
-          }}
-        >
-          <Text
+      {vacationInfos.slice(0, 3).map((vacation, index) => {
+        const isOwner = vacation.user?.id === currentUserId;
+        const backgroundColor = isOwner ? colors.PRIMARY : colors.SECONDARY;
+        return (
+          <View
+            key={index}
             style={{
-              fontSize: 8,
-              padding: 2,
-              textAlign: 'center',
-              color: 'white',
-              fontFamily: 'Gmarket-Sans-Medium'
+              width: '100%',
+              backgroundColor,
+              marginVertical: 1,
+              borderRadius: 2
             }}
           >
-            {truncateText(vacation.title, 4)}
-          </Text>
-        </View>
-      ))}
+            <Text
+              style={{
+                fontSize: 8,
+                padding: 2,
+                textAlign: 'center',
+                color: 'white',
+                fontFamily: 'Gmarket-Sans-Medium'
+              }}
+            >
+              {isOwner
+                ? truncateText(vacation.title, 4)
+                : truncateText(vacation.user!.name, 5)}
+            </Text>
+          </View>
+        );
+      })}
       {vacationInfos.length > 3 && (
         <Text
           style={{

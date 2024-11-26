@@ -1,21 +1,27 @@
 import { colors } from '@/src/styles/colors';
 import { commonStyles } from '@/src/styles/commonStyles';
 import React from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 
-interface ConfirmLeaveGroupProps {
+interface ConfirmActionModalProps {
   closeModal: () => void;
-  onConfirmLeave: () => void;
+  onConfirm: () => void;
+  confirmText: string;
+  cancelText: string;
+  message: string;
 }
 
-function ConfirmLeaveGroup({
+function ConfirmActionModal({
   closeModal,
-  onConfirmLeave
-}: ConfirmLeaveGroupProps) {
+  onConfirm,
+  confirmText,
+  cancelText,
+  message
+}: ConfirmActionModalProps) {
   return (
     <>
       <Text style={[commonStyles.textBody, { textAlign: 'center' }]}>
-        정말 그룹에서 나가시겠습니까?
+        {message}
       </Text>
       <View
         style={[
@@ -25,11 +31,11 @@ function ConfirmLeaveGroup({
         ]}
       >
         <Pressable onPress={closeModal}>
-          <Text style={commonStyles.textBody}>취소</Text>
+          <Text style={commonStyles.textBody}>{cancelText}</Text>
         </Pressable>
-        <Pressable onPress={onConfirmLeave}>
+        <Pressable onPress={onConfirm}>
           <Text style={[commonStyles.textBody, { color: colors.PRIMARY }]}>
-            나가기
+            {confirmText}
           </Text>
         </Pressable>
       </View>
@@ -37,14 +43,4 @@ function ConfirmLeaveGroup({
   );
 }
 
-const styles = StyleSheet.create({
-  cancelButton: {
-    padding: 10,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: colors.GRAY_200,
-    borderRadius: 5
-  }
-});
-
-export default ConfirmLeaveGroup;
+export default ConfirmActionModal;

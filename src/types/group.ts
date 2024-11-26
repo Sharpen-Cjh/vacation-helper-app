@@ -6,7 +6,7 @@ type GroupMember = {
 
 type GroupListItem = {
   creator: GroupMember;
-  id: string;
+  id: number;
   inviteCode: string;
   members: GroupMember[];
   name: string;

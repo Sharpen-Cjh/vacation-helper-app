@@ -24,7 +24,7 @@ import useAuth from '@/src/hooks/queries/useAuth';
 import { UserProfile } from '@/src/types/auth';
 
 interface GroupDetailProps {
-  groupID: string;
+  groupId: number;
 }
 const toastConfig = {
   success: (props: BaseToastProps) => (
@@ -44,11 +44,11 @@ const toastConfig = {
     />
   )
 };
-function GroupDetail({ groupID }: GroupDetailProps) {
+function GroupDetail({ groupId }: GroupDetailProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const {
     getGroupByIdQuery: { data, isError, isLoading }
-  } = useGroupInfo(groupID);
+  } = useGroupInfo(groupId);
   const { getProfileQuery } = useAuth();
 
   const userInfo = getProfileQuery.data as UserProfile;
@@ -163,7 +163,7 @@ function GroupDetail({ groupID }: GroupDetailProps) {
             <GroupCreateForm
               closeModal={closeModal}
               title='그룹 이름 수정'
-              groupID={data.id}
+              groupId={data.id}
             />
           </View>
         </View>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,20 +7,25 @@ import {
   Pressable,
   View
 } from 'react-native';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar, DateData, LocaleConfig } from 'react-native-calendars';
 
 import HeaderComponent from './HeaderComponent';
 import DayComponent from './DayComponent';
 import BottomSheetModal from '../modals/BottomSheetModal';
+import EventForm from './EventForm';
 
-import { formatVacationDataForMarkedDates } from '@/src/utils';
+import { formatVacationDataForMarkedDates, truncateText } from '@/src/utils';
 
-import useVacation from '@/src/hooks/queries/useVacation';
 import type { VacationInfo } from '@/src/types/vacationInfo';
+import type { UserProfile } from '@/src/types/auth';
 import { colors } from '@/src/styles/colors';
 import CommonModal from '../modals/CommonModal';
-import EventForm from './EventForm';
+
+import useVacation from '@/src/hooks/queries/useVacation';
+import useAuth from '@/src/hooks/queries/useAuth';
+import useGroupInfo from '@/src/hooks/queries/useGroup';
 
 LocaleConfig.locales['ko'] = {
   monthNames: [
@@ -54,6 +59,11 @@ LocaleConfig.defaultLocale = 'ko';
 
 const { height } = Dimensions.get('window');
 
+type TabParamList = {
+  Calendar: undefined;
+  Group: { group: boolean };
+};
+
 function CalendarScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [commonModalVisible, setCommonModalVisible] = useState<boolean>(false);
@@ -64,17 +74,102 @@ function CalendarScreen() {
     []
   );
   const [selectedDate, setSelectedDate] = useState<string>('');
-  const { getAllVacationQuery } = useVacation();
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
-  const markedDates = getAllVacationQuery.isSuccess
+  const { getAllVacationQuery, getGroupVacationsQuery } =
+    useVacation(selectedGroupId);
+  const { getProfileQuery } = useAuth();
+  const { getUserGroupListQuery } = useGroupInfo();
+
+  const route = useRoute<RouteProp<TabParamList, 'Group'>>();
+  const isGroupCalendar = route.params?.group || false;
+
+  useEffect(() => {
+    if (isGroupCalendar && getUserGroupListQuery.isSuccess) {
+      const firstGroup = getUserGroupListQuery.data?.[0];
+      if (firstGroup) {
+        setSelectedGroupId(firstGroup.id);
+      }
+    }
+  }, [getUserGroupListQuery.isSuccess, isGroupCalendar]);
+
+  const {
+    additionalUnderOneYearLeaveAdded,
+    availableAnnualLeaves,
+    availableUnderOneYearLeaves,
+    id: currentUserId
+  } = getProfileQuery.data as Partial<UserProfile>;
+
+  const availableAnnualLeavesData = {
+    additionalUnderOneYearLeaveAdded,
+    availableAnnualLeaves,
+    availableUnderOneYearLeaves
+  };
+
+  const markedDates = isGroupCalendar
+    ? getGroupVacationsQuery.isSuccess
+      ? formatVacationDataForMarkedDates(
+          getGroupVacationsQuery.data as VacationInfo[]
+        )
+      : {}
+    : getAllVacationQuery.isSuccess
     ? formatVacationDataForMarkedDates(
         getAllVacationQuery.data as VacationInfo[]
       )
     : {};
 
+  const handleGroupChange = (groupId: number | null) => {
+    setSelectedGroupId(groupId);
+  };
+
+  const refetchVacations = async () => {
+    if (isGroupCalendar) {
+      const { data: updatedGroupVacationData } =
+        await getGroupVacationsQuery.refetch();
+
+      if (!updatedGroupVacationData) return;
+
+      const updatedMarkedDates = formatVacationDataForMarkedDates(
+        updatedGroupVacationData as VacationInfo[]
+      );
+
+      const updatedVacations = updatedMarkedDates[selectedDate] || [];
+
+      setSelectedVacations(updatedVacations);
+    } else {
+      const { data: updatedVacationData } = await getAllVacationQuery.refetch();
+
+      if (!updatedVacationData) return;
+
+      const updatedMarkedDates = formatVacationDataForMarkedDates(
+        updatedVacationData as VacationInfo[]
+      );
+
+      const updatedVacations = updatedMarkedDates[selectedDate] || [];
+
+      setSelectedVacations(updatedVacations);
+    }
+  };
+
   const showLeaveForm = (vacationInfo: VacationInfo | null) => {
     setSelectedVacation(vacationInfo);
     setCommonModalVisible(true);
+  };
+
+  const handleDayPress = (date: DateData, vacations: VacationInfo[]) => {
+    if (vacations.length === 0) return;
+
+    setSelectedVacations(vacations);
+    setSelectedDate(date.dateString);
+    openBottomSheet();
+  };
+
+  const openBottomSheet = () => {
+    setModalVisible(true);
+  };
+
+  const closeBottomSheet = () => {
+    setModalVisible(false);
   };
 
   const renderHeader = (date: string) => {
@@ -86,29 +181,16 @@ function CalendarScreen() {
 
     return (
       <HeaderComponent
+        isGroupCalendar={isGroupCalendar}
         monthYear={monthYear}
+        groupList={getUserGroupListQuery.data}
         handleCreateVacationButton={() => {
           showLeaveForm(null);
         }}
+        onGroupChange={handleGroupChange}
+        selectedGroupId={selectedGroupId}
       />
     );
-  };
-
-  const handleDayPress = (date: DateData, vacations: VacationInfo[]) => {
-    if (vacations.length === 0) return;
-
-    const selectedDateLabel = new Date(date.dateString).toLocaleDateString(
-      'ko-KR',
-      {
-        month: 'long',
-        day: 'numeric',
-        weekday: 'long'
-      }
-    );
-
-    setSelectedVacations(vacations);
-    setSelectedDate(selectedDateLabel);
-    openBottomSheet();
   };
 
   const renderDayComponent = ({ date }: { date: DateData }) => {
@@ -118,31 +200,34 @@ function CalendarScreen() {
         date={date}
         vacationInfos={vacationInfos}
         onPress={() => handleDayPress(date, vacationInfos)}
+        currentUserId={currentUserId}
       />
     );
   };
 
-  const openBottomSheet = () => {
-    setModalVisible(true);
-  };
+  const renderVacationInfo = ({ item }: { item: VacationInfo }) => {
+    const isOwner = item.user?.id === currentUserId;
 
-  const closeBottomSheet = () => {
-    setModalVisible(false);
+    return (
+      <Pressable
+        style={[
+          styles.vacationInfoContainer,
+          {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            borderLeftColor: isOwner ? colors.PRIMARY : colors.SECONDARY
+          }
+        ]}
+        onPress={isOwner ? () => showLeaveForm(item) : null}
+      >
+        <Text style={styles.vacationInfoText}>
+          {isOwner
+            ? truncateText(item.title, 20)
+            : truncateText(item.user!.name, 20)}
+        </Text>
+      </Pressable>
+    );
   };
-
-  const renderVacationInfo = ({ item }: { item: VacationInfo }) => (
-    <Pressable
-      style={[
-        styles.vacationInfoContainer,
-        { flexDirection: 'row', justifyContent: 'space-between' }
-      ]}
-      onPress={() => {
-        showLeaveForm(item);
-      }}
-    >
-      <Text style={styles.vacationInfoText}>{item.title}</Text>
-    </Pressable>
-  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -194,6 +279,8 @@ function CalendarScreen() {
         <EventForm
           selectedVacation={selectedVacation}
           closeModal={() => setCommonModalVisible(false)}
+          availableAnnualLeavesData={availableAnnualLeavesData}
+          refetchVacations={refetchVacations}
         />
       </CommonModal>
       <BottomSheetModal visible={modalVisible} onClose={closeBottomSheet}>
@@ -241,8 +328,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 5,
     borderRightWidth: 1,
     borderRightColor: colors.GRAY_200,
-    borderBlockColor: colors.GRAY_200,
-    borderLeftColor: colors.PRIMARY
+    borderBlockColor: colors.GRAY_200
   },
   vacationInfoText: {
     fontSize: 10,

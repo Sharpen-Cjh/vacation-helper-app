@@ -17,7 +17,7 @@ function useGetUserGroupList() {
   });
 }
 
-function useGetGroupById(groupId: string | null) {
+function useGetGroupById(groupId: number | null) {
   return useQuery({
     queryKey: ['group', 'getGroupById', groupId],
     queryFn: () => (groupId ? getGroupByIdAPI(groupId) : null),
@@ -44,7 +44,7 @@ function useUpdateGroupInfo() {
         queryKey: ['group', 'getUserGroupList']
       });
       queryClient.invalidateQueries({
-        queryKey: ['group', 'getGroupById', variables.groupID]
+        queryKey: ['group', 'getGroupById', variables.groupId]
       });
     }
   });
@@ -72,7 +72,7 @@ function useLeaveGroup() {
   });
 }
 
-function useGroupInfo(groupId: string | null = null) {
+function useGroupInfo(groupId: number | null = null) {
   const getUserGroupListQuery = useGetUserGroupList();
   const createGroupMutation = useCreateGroup();
   const updateGroupInfoMutation = useUpdateGroupInfo();

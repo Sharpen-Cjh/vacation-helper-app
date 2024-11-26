@@ -11,13 +11,13 @@ import { validateGroupCreateForm } from '@/src/utils';
 interface GroupCreateFormProps {
   closeModal: () => void;
   title?: string;
-  groupID?: string;
+  groupId?: string;
 }
 
 const GroupCreateForm = ({
   closeModal,
   title = '그룹 생성',
-  groupID = ''
+  groupId = ''
 }: GroupCreateFormProps) => {
   const { createGroupMutation, updateGroupInfoMutation } = useGroupInfo();
   const groupForm = useForm({
@@ -43,7 +43,7 @@ const GroupCreateForm = ({
   const updateGroupName = () => {
     updateGroupInfoMutation.mutate(
       {
-        groupID: groupID,
+        groupId: groupId,
         groupName: groupForm.values.groupName
       },
       {
@@ -78,7 +78,5 @@ const GroupCreateForm = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({});
 
 export default GroupCreateForm;

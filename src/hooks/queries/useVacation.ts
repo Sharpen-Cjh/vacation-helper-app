@@ -18,7 +18,7 @@ function useGetAllVacationInfo() {
   });
 }
 
-function useGetGroupVacations(groupId: number) {
+function useGetGroupVacations(groupId: number | null) {
   return useQuery({
     queryKey: ['vacation', 'getGroupVacations', groupId],
     queryFn: () => getGroupVacationsApi(groupId),
@@ -74,17 +74,19 @@ function useDeleteVacationInfo(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-function useVacation() {
+function useVacation(groupId: number | null) {
   const getAllVacationQuery = useGetAllVacationInfo();
   const postVacationInfoMutation = usePostVacationInfo();
   const updateVacationInfoMutation = useUpdateVacationInfo();
   const deleteVacationInfoMutation = useDeleteVacationInfo();
+  const getGroupVacationsQuery = useGetGroupVacations(groupId);
 
   return {
     getAllVacationQuery,
     postVacationInfoMutation,
     updateVacationInfoMutation,
-    deleteVacationInfoMutation
+    deleteVacationInfoMutation,
+    getGroupVacationsQuery
   };
 }
 
