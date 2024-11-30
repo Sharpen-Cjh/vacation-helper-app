@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@/src/styles/colors';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
+import CustomPicker from '@/src/components/CustomPicker'; // CustomPicker 경로에 맞게 수정
 import { GroupListItem } from '@/src/types/group';
 
 type HeaderComponentProps = {
@@ -37,23 +37,19 @@ function HeaderComponent({
       <Text style={styles.monthYear}>{monthYear}</Text>
       {isGroupCalendar && (
         <View style={styles.pickerContainer}>
-          <Picker
+          <CustomPicker
+            options={groupList.map((group) => ({
+              label: group.name,
+              value: group.id
+            }))}
             selectedValue={selectedGroupId}
             onValueChange={(value) => onGroupChange(value)}
-          >
-            {groupList.map((group) => (
-              <Picker.Item
-                key={group.id}
-                label={group.name}
-                value={group.id}
-                fontFamily='Gmarket-Sans-Medium'
-              />
-            ))}
-          </Picker>
+            placeholder='Select a group'
+          />
         </View>
       )}
       <Pressable style={styles.addButton} onPress={handleCreateVacationButton}>
-        <Ionicons name='add-circle-outline' size={40} color={colors.PRIMARY} />
+        <Ionicons name='add' size={30} color={colors.PRIMARY} />
       </Pressable>
     </View>
   );

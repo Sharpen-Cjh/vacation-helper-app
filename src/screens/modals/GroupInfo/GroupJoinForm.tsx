@@ -24,7 +24,7 @@ function GroupJoinForm({ closeModal }: GroupJoinFormProps) {
 
   return (
     <View style={{ gap: 10 }}>
-      <Text style={[commonStyles.textHeader, commonStyles.textLeft]}>
+      <Text style={[commonStyles.textBody, commonStyles.textLeft]}>
         그룹 참가
       </Text>
       <BottomBorderedInput
@@ -35,7 +35,7 @@ function GroupJoinForm({ closeModal }: GroupJoinFormProps) {
         }}
       />
       <ButtonRow
-        primaryTitle='저장'
+        primaryTitle='참가'
         secondaryTitle='취소'
         onPrimaryPress={handlePressSaveButton}
         onSecondaryPress={closeModal}

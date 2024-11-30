@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    fontWeight: '700'
+    fontFamily: 'Gmarket-Sans-Medium'
   },
   filledText: {
     color: colors.WHITE

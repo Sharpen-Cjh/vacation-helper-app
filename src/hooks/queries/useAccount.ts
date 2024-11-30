@@ -1,5 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
-import { patchAvailableAnnualLeave, patchNickname } from '@/src/api/account';
+import {
+  patchAvailableAnnualLeave,
+  patchNickname,
+  patchPassword
+} from '@/src/api/account';
 
 import { UseMutationCustomOptions } from '@/src/types/common';
 import queryClient from '@/src/api/queryClient';
@@ -9,6 +13,17 @@ function useUpdateNickname(mutationOptions?: UseMutationCustomOptions) {
     mutationFn: patchNickname,
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: ['auth', 'getProfile'] });
+    },
+    ...mutationOptions
+  });
+}
+
+function useUpdatePassword(mutationOptions?: UseMutationCustomOptions) {
+  return useMutation({
+    mutationFn: (variables: { currentPassword: string; newPassword: string }) =>
+      patchPassword(variables.currentPassword, variables.newPassword),
+    onSuccess() {
+      queryClient.invalidateQueries;
     },
     ...mutationOptions
   });
@@ -35,4 +50,4 @@ function useUpdateAnnualLeave(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-export { useUpdateNickname, useUpdateAnnualLeave };
+export { useUpdateNickname, useUpdateAnnualLeave, useUpdatePassword };

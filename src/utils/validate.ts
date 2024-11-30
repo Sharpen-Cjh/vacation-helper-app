@@ -148,10 +148,39 @@ const validateGroupCreateForm = (values: { groupName: string }) => {
   return errors;
 };
 
+const validateChangePasswordForm = (values: {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}) => {
+  const errors = {
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
+
+  if (!values.currentPassword) {
+    errors.currentPassword = '현재 비밀번호를 입력해주세요.';
+  }
+
+  if (!values.newPassword) {
+    errors.newPassword = '새 비밀번호를 입력해주세요.';
+  } else if (values.newPassword.length < 8 || values.newPassword.length > 20) {
+    errors.newPassword = '새 비밀번호는 8자 이상 20자 이하로 입력해주세요.';
+  }
+
+  if (values.newPassword !== values.confirmPassword) {
+    errors.confirmPassword = '새 비밀번호와 확인 비밀번호가 일치하지 않습니다.';
+  }
+
+  return errors;
+};
+
 export {
   validateLogin,
   validateSignup,
   validateEventForm,
   validateAnnualLeaveForm,
-  validateGroupCreateForm
+  validateGroupCreateForm,
+  validateChangePasswordForm
 };

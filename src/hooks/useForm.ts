@@ -50,7 +50,8 @@ function useForm<T>({ initialValue, validate }: UseFormProps<T>) {
     touched,
     setValues,
     getTextInputProps,
-    getSwitchProps
+    getSwitchProps,
+    setErrors
   };
 }
 

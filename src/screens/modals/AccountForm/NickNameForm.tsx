@@ -21,7 +21,7 @@ function NickNameForm({ closeModal }: NickNameFormProps) {
 
   return (
     <View style={{ gap: 10 }}>
-      <Text style={[commonStyles.textHeader, commonStyles.textLeft]}>
+      <Text style={[commonStyles.textBody, commonStyles.textLeft]}>
         닉네임 변경
       </Text>
       <BottomBorderedInput

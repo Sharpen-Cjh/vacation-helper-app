@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 16,
+    fontFamily: 'Gmarket-Sans-Medium',
     color: colors.BLACK,
     padding: 0
   },
@@ -97,6 +98,7 @@ const styles = StyleSheet.create({
   error: {
     color: colors.RED_500,
     fontSize: 12,
+    fontFamily: 'Gmarket-Sans-Medium',
     paddingTop: 5
   }
 });

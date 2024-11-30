@@ -111,7 +111,7 @@ function AnnualLeaveForm({ closeModal }: LeaveDaysFormProps) {
 
   return (
     <View style={{ gap: 20 }}>
-      <Text style={[commonStyles.textHeader, { textAlign: 'center' }]}>
+      <Text style={[commonStyles.textBody, { textAlign: 'center' }]}>
         잔여 연차 변경
       </Text>
       <View style={[commonStyles.row, { gap: 30 }]}>

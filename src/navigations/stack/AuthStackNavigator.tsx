@@ -28,7 +28,8 @@ function AuthStackNavigator({}) {
           shadowColor: 'gray'
         },
         headerTitleStyle: {
-          fontSize: 15
+          fontSize: 15,
+          fontFamily: 'Gmarket-Sans-Medium'
         },
         headerTintColor: 'black'
       }}

@@ -3,7 +3,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { Modal, StyleSheet, Text, View, Pressable } from 'react-native';
 import NickNameForm from './NickNameForm';
-import PasswordForm from './PasswordForm';
+import PasswordForm from './ChangePasswordForm';
 import AnnualLeaveForm from './AnnualLeaveForm';
 import { colors } from '@/src/styles/colors';
 import useAuth from '@/src/hooks/queries/useAuth';

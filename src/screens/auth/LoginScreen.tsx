@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { StyleSheet, View, TextInput } from 'react-native';
+import { StyleSheet, View, TextInput, Text } from 'react-native';
 
 import InputField from '@/src/components/InputField';
 import CustomButton from '@/src/components/CustomButton';
@@ -18,13 +18,23 @@ function LoginScreen({}: LoginScreenProps) {
   const login = useForm({
     initialValue: {
       email: '',
-      password: ''
+      password: '',
+      general: ''
     },
     validate: validateLogin
   });
 
   const handleSubmit = () => {
-    loginMutation.mutate(login.values);
+    login.setErrors({});
+    loginMutation.mutate(login.values, {
+      onError: (error: any) => {
+        login.setErrors({
+          email: error.response?.data?.email || '',
+          password: error.response?.data?.password || '',
+          general: error.response?.data?.message || '로그인에 실패했습니다.'
+        });
+      }
+    });
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -52,6 +62,9 @@ function LoginScreen({}: LoginScreenProps) {
           {...login.getTextInputProps('password')}
         />
       </View>
+      {login.errors.general !== '' && (
+        <Text style={styles.errorText}>{login.errors.general}</Text>
+      )}
       <CustomButton
         label='로그인'
         variant='filled'
@@ -70,6 +83,12 @@ const styles = StyleSheet.create({
   inputContainer: {
     gap: 20,
     marginBottom: 30
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 20,
+    fontSize: 12,
+    fontFamily: 'Gmarket-Sans-Medium'
   }
 });
 

@@ -7,7 +7,8 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    'Gmarket-Sans-Medium': require('@/assets/fonts/Gmarket-Sans-Medium.otf')
+    'Gmarket-Sans-Medium': require('@/assets/fonts/Gmarket-Sans-Medium.otf'),
+    'SpaceMono-Regular': require('@/assets/fonts/SpaceMono-Regular.ttf')
   });
 
   useEffect(() => {
