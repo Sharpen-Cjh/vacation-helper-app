@@ -12,19 +12,26 @@ interface DayComponentProps {
   vacationInfos: VacationInfo[];
   onPress: () => void;
   currentUserId?: number;
+  holidayInfo: string | null;
 }
 
 const DayComponent = ({
   date,
   vacationInfos,
   onPress,
-  currentUserId
+  currentUserId,
+  holidayInfo
 }: DayComponentProps) => {
   const isToday = date.dateString === new Date().toISOString().split('T')[0];
   const dayOfWeek = new Date(date.dateString).getDay();
 
-  const dayColor =
-    dayOfWeek === 0 ? colors.PRIMARY : dayOfWeek === 6 ? 'skyblue' : 'black';
+  const dayColor = holidayInfo
+    ? colors.PRIMARY // 공휴일 색상
+    : dayOfWeek === 0
+    ? colors.PRIMARY // 일요일 색상
+    : dayOfWeek === 6
+    ? colors.SECONDARY // 토요일 색상
+    : 'black'; // 평일 색상
 
   return (
     <Pressable
@@ -40,23 +47,42 @@ const DayComponent = ({
     >
       <View
         style={{
-          borderRadius: 15,
-          borderColor: isToday ? colors.PRIMARY : 'transparent',
-          borderWidth: isToday ? 1 : 0,
-          width: 20,
-          padding: 1,
-          alignItems: 'center'
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: 5
         }}
       >
-        <Text
+        <View
           style={{
-            color: dayColor,
-            fontFamily: 'Gmarket-Sans-Medium',
-            fontSize: 10
+            borderRadius: 15,
+            borderColor: isToday ? colors.PRIMARY : 'transparent',
+            borderWidth: isToday ? 1 : 0,
+            width: isToday ? '25%' : 'auto',
+            alignItems: 'center'
           }}
         >
-          {date.day}
-        </Text>
+          <Text
+            style={{
+              color: dayColor,
+              fontFamily: 'Gmarket-Sans-Medium',
+              fontSize: 9
+            }}
+          >
+            {date.day}
+          </Text>
+        </View>
+
+        {holidayInfo && (
+          <Text
+            style={{
+              fontSize: 6,
+              color: colors.PRIMARY,
+              fontFamily: 'Gmarket-Sans-Medium'
+            }}
+          >
+            {truncateText(holidayInfo, 5)}
+          </Text>
+        )}
       </View>
       {vacationInfos.slice(0, 3).map((vacation, index) => {
         const isOwner = vacation.user?.id === currentUserId;

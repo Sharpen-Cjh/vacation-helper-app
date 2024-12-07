@@ -18,8 +18,8 @@ type VacationInfo = {
   id: number;
   start: string;
   end: string;
-  annualLeaveDays?: number;
-  underOneYearAnnualLeaveDays?: number;
+  annualLeaveDays: number;
+  underOneYearAnnualLeaveDays: number;
   title: string;
   user?: User;
   isHoliday?: boolean;
@@ -36,9 +36,14 @@ type VacationInfoFormProps = {
   onClose: () => void;
 };
 
-type Holiday = {
-  locdate: number;
-  dateName: string;
-};
+interface Holiday {
+  locdate: number; // YYYYMMDD 형식의 날짜
+  dateName: string; // 휴일 이름
+  isHoliday: 'Y' | 'N'; // 휴일 여부 ('Y' or 'N')
+  seq?: number; // 순서 정보 (선택 사항)
+}
 
-export type { User, VacationInfo, VacationInfoFormProps, Holiday };
+// holidays 데이터 배열 타입
+type Holidays = Holiday[];
+
+export type { User, VacationInfo, VacationInfoFormProps, Holidays };

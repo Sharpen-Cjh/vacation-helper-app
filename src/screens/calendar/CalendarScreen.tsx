@@ -18,7 +18,7 @@ import EventForm from './EventForm';
 
 import { formatVacationDataForMarkedDates, truncateText } from '@/src/utils';
 
-import type { VacationInfo } from '@/src/types/vacationInfo';
+import type { Holidays, VacationInfo } from '@/src/types/vacationInfo';
 import type { UserProfile } from '@/src/types/auth';
 import { colors } from '@/src/styles/colors';
 import CommonModal from '../modals/CommonModal';
@@ -75,9 +75,12 @@ function CalendarScreen() {
   );
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+  const [currentYear, setCurrentYear] = useState<number>(
+    new Date().getFullYear()
+  );
 
-  const { getAllVacationQuery, getGroupVacationsQuery } =
-    useVacation(selectedGroupId);
+  const { getAllVacationQuery, getGroupVacationsQuery, getHolidaysQuery } =
+    useVacation(selectedGroupId, currentYear);
   const { getProfileQuery } = useAuth();
   const { getUserGroupListQuery } = useGroupInfo();
 
@@ -106,18 +109,42 @@ function CalendarScreen() {
     availableUnderOneYearLeaves
   };
 
-  const markedDates = isGroupCalendar
-    ? getGroupVacationsQuery.isSuccess
-      ? formatVacationDataForMarkedDates(
-          getGroupVacationsQuery.data as VacationInfo[]
-        )
-      : {}
-    : getAllVacationQuery.isSuccess
-    ? formatVacationDataForMarkedDates(
-        getAllVacationQuery.data as VacationInfo[]
-      )
-    : {};
+  const holidays: Holidays = getHolidaysQuery.isSuccess
+    ? Array.isArray(getHolidaysQuery.data.response.body.items.item)
+      ? getHolidaysQuery.data.response.body.items.item
+      : [getHolidaysQuery.data.response.body.items.item] // 단일 객체를 배열로 변환
+    : [];
 
+  const vacations =
+    isGroupCalendar && getGroupVacationsQuery.isSuccess
+      ? getGroupVacationsQuery.data
+      : getAllVacationQuery.isSuccess
+      ? getAllVacationQuery.data
+      : [];
+
+  const holidayDates: Record<string, string> = holidays.reduce(
+    (acc, holiday) => {
+      const formattedDate = holiday.locdate
+        .toString()
+        .replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'); // YYYYMMDD를 YYYY-MM-DD로 변환
+      acc[formattedDate] = holiday.dateName; // 날짜를 키로, 공휴일 이름을 값으로 저장
+      return acc;
+    },
+    {} as Record<string, string>
+  );
+
+  const markedDates = (() => {
+    const vacationDates = formatVacationDataForMarkedDates(vacations);
+
+    return vacationDates;
+  })();
+
+  const handleMonthChange = (monthData: DateData) => {
+    const newYear = new Date(monthData.dateString).getFullYear();
+    if (newYear !== currentYear) {
+      setCurrentYear(newYear);
+    }
+  };
   const handleGroupChange = (groupId: number | null) => {
     setSelectedGroupId(groupId);
   };
@@ -195,10 +222,12 @@ function CalendarScreen() {
 
   const renderDayComponent = ({ date }: { date: DateData }) => {
     const vacationInfos = markedDates[date.dateString] || [];
+    const holidayInfo = holidayDates[date.dateString] || null;
     return (
       <DayComponent
         date={date}
         vacationInfos={vacationInfos}
+        holidayInfo={holidayInfo}
         onPress={() => handleDayPress(date, vacationInfos)}
         currentUserId={currentUserId}
       />
@@ -234,6 +263,7 @@ function CalendarScreen() {
       <Calendar
         renderHeader={renderHeader}
         dayComponent={renderDayComponent}
+        onMonthChange={handleMonthChange}
         theme={{
           textDayFontFamily: 'Gmarket-Sans-Medium',
           textMonthFontFamily: 'Gmarket-Sans-Medium',

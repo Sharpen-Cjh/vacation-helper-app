@@ -34,7 +34,7 @@ const deleteVacationInfoApi = async (id: number) => {
   return data;
 };
 
-const getHolidays = async (year: number) => {
+const getHolidaysApi = async (year: number) => {
   const { data } = await axiosInstance.get(`/holidays`, {
     params: {
       year
@@ -49,5 +49,5 @@ export {
   getGroupVacationsApi,
   updateVacationInfoApi,
   deleteVacationInfoApi,
-  getHolidays
+  getHolidaysApi
 };

@@ -189,40 +189,36 @@ function EventForm({
           )}
         </Pressable>
         {typeof availableAnnualLeavesData.availableUnderOneYearLeaves ===
-          'number' &&
-          availableAnnualLeavesData.availableUnderOneYearLeaves > 0 && (
-            <Pressable
-              onPress={() => underOneYearAnnualLeaveRef.current?.focus()}
-              style={{ flex: 1 }}
-            >
-              <View style={[commonStyles.row, { gap: 30 }]}>
-                <Text style={commonStyles.textBody}>
-                  1년 미만 연차 잔여{' '}
-                  {availableAnnualLeavesData.availableUnderOneYearLeaves}일
-                </Text>
-                <TextInput
-                  ref={underOneYearAnnualLeaveRef}
-                  style={styles.modalText}
-                  value={String(
-                    getTextInputProps('underOneYearAnnualLeaveDays').value
-                  )}
-                  onChangeText={
-                    getTextInputProps('underOneYearAnnualLeaveDays')
-                      .onChangeText
-                  }
-                  onBlur={
-                    getTextInputProps('underOneYearAnnualLeaveDays').onBlur
-                  }
-                  keyboardType='numeric'
-                />
-              </View>
-              {touched.underOneYearAnnualLeaveDays && (
-                <Text style={commonStyles.errorText}>
-                  {errors.underOneYearAnnualLeaveDays}
-                </Text>
-              )}
-            </Pressable>
-          )}
+          'number' && (
+          <Pressable
+            onPress={() => underOneYearAnnualLeaveRef.current?.focus()}
+            style={{ flex: 1 }}
+          >
+            <View style={[commonStyles.row, { gap: 30 }]}>
+              <Text style={commonStyles.textBody}>
+                1년 미만 연차 잔여{' '}
+                {availableAnnualLeavesData.availableUnderOneYearLeaves}일
+              </Text>
+              <TextInput
+                ref={underOneYearAnnualLeaveRef}
+                style={styles.modalText}
+                value={String(
+                  getTextInputProps('underOneYearAnnualLeaveDays').value
+                )}
+                onChangeText={
+                  getTextInputProps('underOneYearAnnualLeaveDays').onChangeText
+                }
+                onBlur={getTextInputProps('underOneYearAnnualLeaveDays').onBlur}
+                keyboardType='numeric'
+              />
+            </View>
+            {touched.underOneYearAnnualLeaveDays && (
+              <Text style={commonStyles.errorText}>
+                {errors.underOneYearAnnualLeaveDays}
+              </Text>
+            )}
+          </Pressable>
+        )}
 
         <View style={styles.sectionContainer}>
           <Text style={commonStyles.textBody}>그룹 공유</Text>

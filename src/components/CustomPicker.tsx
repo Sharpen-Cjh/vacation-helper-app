@@ -35,7 +35,7 @@ const CustomPicker = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View>
       <Pressable
         style={styles.inputContainer}
         onPress={() => setIsVisible(true)}
@@ -91,17 +91,13 @@ const CustomPicker = ({
 export default CustomPicker;
 
 const styles = StyleSheet.create({
-  container: {
-    marginVertical: 10
-  },
   inputContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: '#ddd',
-    padding: 12,
+    padding: 5,
     borderRadius: 8
-    // backgroundColor: '#f7f7f7'
   },
   inputText: {
     fontSize: 12,

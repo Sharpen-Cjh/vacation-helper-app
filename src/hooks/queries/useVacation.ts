@@ -4,11 +4,20 @@ import {
   deleteVacationInfoApi,
   getAllVacationInfoApi,
   getGroupVacationsApi,
-  updateVacationInfoApi
+  updateVacationInfoApi,
+  getHolidaysApi
 } from '@/src/api/vacationInfo';
 import queryClient from '@/src/api/queryClient';
 import { UseMutationCustomOptions } from '@/src/types/common';
 import { VacationInfo } from '@/src/types/vacationInfo';
+
+function useGetHolidays(year: number) {
+  return useQuery({
+    queryKey: ['vacation', 'getHolidays', year],
+    queryFn: () => getHolidaysApi(year),
+    refetchOnReconnect: true
+  });
+}
 
 function useGetAllVacationInfo() {
   return useQuery({
@@ -34,6 +43,7 @@ function usePostVacationInfo(mutationOptions?: UseMutationCustomOptions) {
       queryClient.invalidateQueries({
         queryKey: ['vacation', 'getAllVacationInfo']
       });
+      queryClient.invalidateQueries({ queryKey: ['auth', 'getProfile'] });
     },
     onError(error) {
       console.log(error);
@@ -51,6 +61,7 @@ function useUpdateVacationInfo(mutationOptions?: UseMutationCustomOptions) {
       queryClient.invalidateQueries({
         queryKey: ['vacation', 'getAllVacationInfo']
       });
+      queryClient.invalidateQueries({ queryKey: ['auth', 'getProfile'] });
     },
     onError(error) {
       console.log(error);
@@ -74,19 +85,21 @@ function useDeleteVacationInfo(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-function useVacation(groupId: number | null) {
+function useVacation(groupId: number | null, year?: number) {
   const getAllVacationQuery = useGetAllVacationInfo();
   const postVacationInfoMutation = usePostVacationInfo();
   const updateVacationInfoMutation = useUpdateVacationInfo();
   const deleteVacationInfoMutation = useDeleteVacationInfo();
   const getGroupVacationsQuery = useGetGroupVacations(groupId);
+  const getHolidaysQuery = useGetHolidays(year as number);
 
   return {
     getAllVacationQuery,
     postVacationInfoMutation,
     updateVacationInfoMutation,
     deleteVacationInfoMutation,
-    getGroupVacationsQuery
+    getGroupVacationsQuery,
+    getHolidaysQuery
   };
 }
 
