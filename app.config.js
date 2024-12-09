@@ -2,8 +2,8 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: 'vacation-helper-app',
-    slug: 'vacation-helper-app',
+    name: 'Vacation-Helper-app',
+    slug: 'Vacation-Helper-app',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
@@ -15,9 +15,11 @@ export default {
       backgroundColor: '#ffffff'
     },
     ios: {
+      buildNumber: '1.0.0',
       supportsTablet: true
     },
     android: {
+      versionCode: 1,
       adaptiveIcon: {
         foregroundImage: './assets/images/icon.png',
         backgroundColor: '#ffffff'
@@ -33,8 +35,7 @@ export default {
       typedRoutes: true
     },
     extra: {
-      API_URL: process.env.API_URL, // 환경 변수 예시
-      API_KEY: process.env.API_KEY // 환경 변수 예시
+      API_URL: process.env.API_URL
     }
   }
 };
