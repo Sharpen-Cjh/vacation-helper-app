@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AuthStackParamList } from '../../navigations/stack/AuthStackNavigator';
 import { authNavigations } from '@/src/constants';
 import CustomButton from '@/src/components/CustomButton';
+import { colors } from '@/src/styles/colors';
 type AuthHomeScreenProps = StackScreenProps<
   AuthStackParamList,
   typeof authNavigations.AUTH_HOME
@@ -22,6 +23,18 @@ function AuthHomeScreen({ navigation }: AuthHomeScreenProps) {
         />
       </View>
       <View style={styles.buttonContainer}>
+        <Text
+          style={{
+            textAlign: 'center',
+            fontFamily: 'Gmarket-Sans-Medium',
+            marginBottom: 20,
+            fontSize: 30,
+            color: colors.PRIMARY
+          }}
+        >
+          Vacation Helper
+        </Text>
+
         <CustomButton
           label='로그인하기'
           onPress={() => navigation.navigate(authNavigations.LOGIN)}

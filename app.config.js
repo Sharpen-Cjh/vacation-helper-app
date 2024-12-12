@@ -2,15 +2,15 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: 'Vacation-Helper-app',
-    slug: 'Vacation-Helper-app',
+    name: 'Vacation Helper',
+    slug: 'vacation-helper',
     version: '1.0.0',
     orientation: 'portrait',
-    icon: './assets/images/icon.png',
+    icon: './assets/images/icon2.png',
     scheme: 'myapp',
     userInterfaceStyle: 'automatic',
     splash: {
-      image: './assets/images/icon.png',
+      image: './assets/images/splash.png',
       resizeMode: 'contain',
       backgroundColor: '#ffffff'
     },
@@ -19,9 +19,10 @@ export default {
       supportsTablet: true
     },
     android: {
+      package: 'com.jaehyeok.vacationhelper',
       versionCode: 1,
       adaptiveIcon: {
-        foregroundImage: './assets/images/icon.png',
+        foregroundImage: './assets/images/adaptive.png',
         backgroundColor: '#ffffff'
       }
     },
@@ -35,7 +36,10 @@ export default {
       typedRoutes: true
     },
     extra: {
-      API_URL: process.env.API_URL
+      API_URL: process.env.API_URL,
+      eas: {
+        projectId: process.env.PROJECT_ID
+      }
     }
   }
 };

@@ -1,57 +1,19 @@
-import {
-  createDrawerNavigator,
-  DrawerContentComponentProps,
-  DrawerContentScrollView,
-  DrawerItemList
-} from '@react-navigation/drawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { Alert, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import BottomTabNavigator from '../tab/BottomTabNavigator';
 import AccountForm from '@/src/screens/modals/AccountForm/AccountForm';
 import GroupList from '@/src/screens/modals/GroupInfo/GroupList';
+
 import { colors } from '@/src/styles/colors';
-import { Ionicons } from '@expo/vector-icons';
-import { Alert, View, StyleSheet, Pressable, Text } from 'react-native';
+
 import useAuth from '@/src/hooks/queries/useAuth';
 
 const Drawer = createDrawerNavigator();
 
 function MainDrawerNavigator() {
   const { logoutMutation } = useAuth();
-
-  const LogoutButton = (props: DrawerContentComponentProps) => {
-    const handleLogout = () => {
-      Alert.alert(
-        '로그아웃',
-        '정말 로그아웃 하시겠습니까?',
-        [
-          { text: '취소', style: 'cancel' },
-          {
-            text: '확인',
-            onPress: () => {
-              logoutMutation.mutate({});
-            }
-          }
-        ],
-        { cancelable: true }
-      );
-    };
-    return (
-      <DrawerContentScrollView {...props}>
-        <DrawerItemList {...props} />
-
-        <View style={styles.logoutContainer}>
-          <Pressable style={styles.logoutButton} onPress={handleLogout}>
-            <Ionicons
-              name='log-out-outline'
-              size={20}
-              color={colors.GRAY_500}
-            />
-            <Text style={styles.logoutText}>로그아웃</Text>
-          </Pressable>
-        </View>
-      </DrawerContentScrollView>
-    );
-  };
 
   return (
     <Drawer.Navigator
@@ -67,7 +29,6 @@ function MainDrawerNavigator() {
         drawerActiveTintColor: colors.PRIMARY,
         drawerInactiveTintColor: 'gray'
       }}
-      drawerContent={(props) => <LogoutButton {...props} />}
     >
       <Drawer.Screen
         name='홈'
@@ -75,7 +36,7 @@ function MainDrawerNavigator() {
         options={{
           headerShown: false,
           drawerIcon: ({ color }) => (
-            <Ionicons name='home' size={16} color={color} />
+            <Ionicons name='home' size={20} color={color} />
           )
         }}
       />
@@ -84,7 +45,7 @@ function MainDrawerNavigator() {
         component={AccountForm}
         options={{
           drawerIcon: ({ color }) => (
-            <Ionicons name='person' size={16} color={color} />
+            <Ionicons name='person' size={20} color={color} />
           )
         }}
       />
@@ -93,10 +54,33 @@ function MainDrawerNavigator() {
         component={GroupList}
         options={{
           drawerIcon: ({ color }) => (
-            <Ionicons name='people' size={16} color={color} />
+            <Ionicons name='people' size={20} color={color} />
           )
         }}
       />
+      <Drawer.Screen
+        name='로그아웃'
+        options={{
+          drawerIcon: ({ color }) => (
+            <Ionicons name='log-out-outline' size={20} color={color} />
+          )
+        }}
+        listeners={{
+          focus: () => {
+            Alert.alert(
+              '로그아웃',
+              '정말 로그아웃 하시겠습니까?',
+              [
+                { text: '취소', style: 'cancel' },
+                { text: '확인', onPress: () => logoutMutation.mutate({}) }
+              ],
+              { cancelable: true }
+            );
+          }
+        }}
+      >
+        {() => null}
+      </Drawer.Screen>
     </Drawer.Navigator>
   );
 }

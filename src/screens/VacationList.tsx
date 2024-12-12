@@ -81,7 +81,6 @@ function VacationList() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text>휴가 리스트</Text>
       <FlatList
         data={vacations}
         keyExtractor={(item) => item.id.toString()}

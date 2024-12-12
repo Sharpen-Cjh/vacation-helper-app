@@ -49,5 +49,16 @@ const logout = async (): Promise<void> => {
   await axiosInstance.post('/auth/logout');
 };
 
-export { postSignup, postLogin, getAccessToken, logout, getProfile };
+const deleteAccount = async (): Promise<void> => {
+  await axiosInstance.delete('/auth/me');
+};
+
+export {
+  postSignup,
+  postLogin,
+  getAccessToken,
+  logout,
+  getProfile,
+  deleteAccount
+};
 export type { RequestUser, ResponseToken, UserProfile };

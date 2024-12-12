@@ -109,11 +109,12 @@ function CalendarScreen() {
     availableUnderOneYearLeaves
   };
 
-  const holidays: Holidays = getHolidaysQuery.isSuccess
-    ? Array.isArray(getHolidaysQuery.data.response.body.items.item)
-      ? getHolidaysQuery.data.response.body.items.item
-      : [getHolidaysQuery.data.response.body.items.item] // 단일 객체를 배열로 변환
-    : [];
+  const holidays: Holidays =
+    getHolidaysQuery.isSuccess && getHolidaysQuery.data
+      ? Array.isArray(getHolidaysQuery.data?.response?.body?.items?.item)
+        ? getHolidaysQuery?.data?.response?.body?.items.item
+        : [getHolidaysQuery?.data?.response?.body?.items.item]
+      : [];
 
   const vacations =
     isGroupCalendar && getGroupVacationsQuery.isSuccess
@@ -122,12 +123,12 @@ function CalendarScreen() {
       ? getAllVacationQuery.data
       : [];
 
-  const holidayDates: Record<string, string> = holidays.reduce(
+  const holidayDates: Record<string, string> = holidays?.reduce(
     (acc, holiday) => {
-      const formattedDate = holiday.locdate
+      const formattedDate = holiday?.locdate
         .toString()
-        .replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'); // YYYYMMDD를 YYYY-MM-DD로 변환
-      acc[formattedDate] = holiday.dateName; // 날짜를 키로, 공휴일 이름을 값으로 저장
+        .replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
+      acc[formattedDate] = holiday?.dateName; // 날짜를 키로, 공휴일 이름을 값으로 저장
       return acc;
     },
     {} as Record<string, string>

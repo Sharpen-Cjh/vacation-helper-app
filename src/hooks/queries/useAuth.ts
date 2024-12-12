@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import {
+  deleteAccount,
   getAccessToken,
   getProfile,
   logout,
@@ -88,6 +89,22 @@ function useLogout(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
+function useDeleteAccount(mutationOptions?: UseMutationCustomOptions) {
+  return useMutation({
+    mutationFn: deleteAccount,
+    onSuccess: async () => {
+      await logout();
+      removeHeader('Authorization');
+      removeEncryptStorage('refreshToken');
+      queryClient.clear();
+    },
+    onError: (error) => {
+      console.error('계정 삭제 중 오류:', error);
+    },
+    ...mutationOptions
+  });
+}
+
 function useAuth() {
   const signupMutation = useSignUp();
   const refreshTokenQuery = useGetRefreshToken();
@@ -98,13 +115,15 @@ function useAuth() {
   const isLogin = getProfileQuery.isSuccess;
   const loginMutation = useLogin();
   const logoutMutation = useLogout();
+  const deleteAccountMutation = useDeleteAccount();
 
   return {
     signupMutation,
     loginMutation,
     isLogin,
     getProfileQuery,
-    logoutMutation
+    logoutMutation,
+    deleteAccountMutation
   };
 }
 

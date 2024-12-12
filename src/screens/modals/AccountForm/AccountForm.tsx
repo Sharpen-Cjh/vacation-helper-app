@@ -14,9 +14,9 @@ interface AccountFormProps {}
 function AccountForm({}: AccountFormProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState<
-    'nickname' | 'password' | 'leaveDays' | null
+    'nickname' | 'password' | 'leaveDays' | 'deleteAccount' | null
   >(null);
-  const { getProfileQuery } = useAuth();
+  const { getProfileQuery, deleteAccountMutation } = useAuth();
   const [userInfo, setUserInfo] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -25,7 +25,9 @@ function AccountForm({}: AccountFormProps) {
     }
   }, [getProfileQuery.isSuccess, getProfileQuery.data]);
 
-  const openModal = (content: 'nickname' | 'password' | 'leaveDays') => {
+  const openModal = (
+    content: 'nickname' | 'password' | 'leaveDays' | 'deleteAccount'
+  ) => {
     setModalContent(content);
     setModalVisible(true);
   };
@@ -33,6 +35,11 @@ function AccountForm({}: AccountFormProps) {
   const closeModal = () => {
     setModalVisible(false);
     setModalContent(null);
+  };
+
+  const handleDeleteAccount = () => {
+    deleteAccountMutation.mutate({});
+    closeModal();
   };
 
   const renderModalContent = () => {
@@ -43,6 +50,24 @@ function AccountForm({}: AccountFormProps) {
         return <PasswordForm closeModal={closeModal} />;
       case 'leaveDays':
         return <AnnualLeaveForm closeModal={closeModal} />;
+      case 'deleteAccount':
+        return (
+          <View>
+            <Text style={styles.modalText}>정말 계정을 탈퇴하시겠습니까? </Text>
+            <Text style={styles.modalText}>데이터가 전부 삭제됩니다.</Text>
+            <View style={styles.modalButtons}>
+              <Pressable
+                style={styles.confirmButton}
+                onPress={handleDeleteAccount}
+              >
+                <Text style={styles.confirmText}>삭제</Text>
+              </Pressable>
+              <Pressable style={styles.cancelButton} onPress={closeModal}>
+                <Text style={styles.cancelText}>취소</Text>
+              </Pressable>
+            </View>
+          </View>
+        );
     }
   };
 
@@ -82,6 +107,12 @@ function AccountForm({}: AccountFormProps) {
             </Text>
           )}
         </View>
+        <Pressable
+          style={styles.deleteAccountButton}
+          onPress={() => openModal('deleteAccount')}
+        >
+          <Text style={styles.deleteAccountText}>계정 탈퇴</Text>
+        </Pressable>
       </View>
       <Modal
         animationType='slide'
@@ -160,6 +191,51 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5
+  },
+  deleteAccountButton: {
+    marginTop: 30,
+    padding: 15,
+    backgroundColor: colors.PRIMARY,
+    borderRadius: 10,
+    alignItems: 'center'
+  },
+  deleteAccountText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'Gmarket-Sans-Medium'
+  },
+  modalText: {
+    textAlign: 'center',
+    fontSize: 14,
+    fontFamily: 'Gmarket-Sans-Medium',
+    marginBottom: 20
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20
+  },
+  confirmButton: {
+    padding: 10,
+    backgroundColor: colors.PRIMARY,
+    borderRadius: 5,
+    marginHorizontal: 10
+  },
+  cancelButton: {
+    padding: 10,
+    backgroundColor: 'gray',
+    borderRadius: 5,
+    marginHorizontal: 10
+  },
+  confirmText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'Gmarket-Sans-Medium'
+  },
+  cancelText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'Gmarket-Sans-Medium'
   }
 });
 

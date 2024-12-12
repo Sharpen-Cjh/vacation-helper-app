@@ -27,6 +27,29 @@ function HeaderComponent({
   const openDrawer = () => {
     navigation.dispatch(DrawerActions.openDrawer());
   };
+  const renderGroupContent = () => {
+    if (groupList.length === 0) {
+      return (
+        <Pressable onPress={openDrawer}>
+          <View>
+            <Text>그룹 없음</Text>
+          </View>
+        </Pressable>
+      );
+    }
+
+    return (
+      <CustomPicker
+        options={groupList.map((group) => ({
+          label: group.name,
+          value: group.id
+        }))}
+        selectedValue={selectedGroupId}
+        onValueChange={(value) => onGroupChange(value)}
+        placeholder='그룹 선택'
+      />
+    );
+  };
 
   return (
     <View style={styles.header}>
@@ -35,18 +58,9 @@ function HeaderComponent({
       </Pressable>
 
       <Text style={styles.monthYear}>{monthYear}</Text>
+
       {isGroupCalendar && (
-        <View style={styles.pickerContainer}>
-          <CustomPicker
-            options={groupList.map((group) => ({
-              label: group.name,
-              value: group.id
-            }))}
-            selectedValue={selectedGroupId}
-            onValueChange={(value) => onGroupChange(value)}
-            placeholder='Select a group'
-          />
-        </View>
+        <View style={styles.pickerContainer}>{renderGroupContent()}</View>
       )}
       <Pressable style={styles.addButton} onPress={handleCreateVacationButton}>
         <Ionicons name='add' size={30} color={colors.PRIMARY} />

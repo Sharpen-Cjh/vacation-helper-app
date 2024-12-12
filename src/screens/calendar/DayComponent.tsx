@@ -26,12 +26,12 @@ const DayComponent = ({
   const dayOfWeek = new Date(date.dateString).getDay();
 
   const dayColor = holidayInfo
-    ? colors.PRIMARY // 공휴일 색상
+    ? colors.PRIMARY
     : dayOfWeek === 0
-    ? colors.PRIMARY // 일요일 색상
+    ? colors.PRIMARY
     : dayOfWeek === 6
-    ? colors.SECONDARY // 토요일 색상
-    : 'black'; // 평일 색상
+    ? colors.SECONDARY
+    : 'black';
 
   return (
     <Pressable
@@ -57,7 +57,7 @@ const DayComponent = ({
             borderRadius: 15,
             borderColor: isToday ? colors.PRIMARY : 'transparent',
             borderWidth: isToday ? 1 : 0,
-            width: isToday ? '25%' : 'auto',
+            width: isToday ? '30%' : 'auto',
             alignItems: 'center'
           }}
         >
