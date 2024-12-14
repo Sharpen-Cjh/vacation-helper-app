@@ -31,7 +31,11 @@ function SignupScreen() {
       {
         onSuccess: () => loginMutation.mutate({ email, password }),
         onError: (error) => {
-          console.log(error);
+          signup.setErrors({
+            ...signup.errors,
+            email: error.response?.data.message
+          });
+          console.log(error.response?.data.message);
         }
       }
     );

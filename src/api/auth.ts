@@ -50,7 +50,7 @@ const logout = async (): Promise<void> => {
 };
 
 const deleteAccount = async (): Promise<void> => {
-  await axiosInstance.delete('/auth/me');
+  await axiosInstance.delete('/users/me');
 };
 
 export {

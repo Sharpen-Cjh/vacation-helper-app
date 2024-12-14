@@ -92,13 +92,11 @@ function useLogout(mutationOptions?: UseMutationCustomOptions) {
 function useDeleteAccount(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: deleteAccount,
-    onSuccess: async () => {
-      await logout();
-      removeHeader('Authorization');
-      removeEncryptStorage('refreshToken');
-      queryClient.clear();
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['auth', 'getProfile'] });
     },
     onError: (error) => {
+      console.log(error.response?.data.message);
       console.error('계정 삭제 중 오류:', error);
     },
     ...mutationOptions
